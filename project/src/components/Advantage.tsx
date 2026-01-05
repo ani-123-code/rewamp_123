@@ -96,23 +96,20 @@ export default function Advantage() {
   const titleRef = useScrollReveal<HTMLDivElement>();
 
   return (
-    <section id="advantage" className="py-16 sm:py-24 md:py-32 px-4 sm:px-6 bg-gradient-to-b from-brand-light to-white relative overflow-hidden">
-      <div className="absolute top-0 right-0 w-[300px] sm:w-[500px] h-[300px] sm:h-[500px] bg-brand-green/5 rounded-full blur-3xl"></div>
-      <div className="absolute bottom-0 left-0 w-[300px] sm:w-[500px] h-[300px] sm:h-[500px] bg-brand-blue/5 rounded-full blur-3xl"></div>
+    <section id="advantage" className="py-16 sm:py-20 px-4 sm:px-6 bg-gradient-to-b from-white to-gray-50/30 relative overflow-hidden">
+      <div className="absolute top-0 right-0 w-[300px] sm:w-[500px] h-[300px] sm:h-[500px] bg-gray-200/20 rounded-full mix-blend-multiply filter blur-[120px] opacity-20"></div>
+      <div className="absolute bottom-0 left-0 w-[300px] sm:w-[500px] h-[300px] sm:h-[500px] bg-gray-300/15 rounded-full mix-blend-multiply filter blur-[120px] opacity-20"></div>
 
       <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-8 sm:gap-12 lg:gap-16 items-start relative z-10">
         <div className="w-full lg:w-1/3 flex justify-center lg:justify-start">
           <div ref={titleRef} className="reveal-on-scroll lg:sticky lg:top-24" style={{ marginTop: 'calc(200px + 1.5rem)' }}>
             <div className="text-center lg:text-left">
               <div className="mb-4 sm:mb-6">
-                <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-r from-brand-purple via-brand-blue to-brand-green blur-lg opacity-30"></div>
-                  <h2 className="relative text-3xl sm:text-4xl font-semibold tracking-tighter bg-gradient-to-r from-brand-purple via-brand-blue to-brand-green bg-clip-text text-transparent">
+                <h2 className="text-3xl sm:text-4xl md:text-5xl font-light tracking-tight text-gray-900" style={{ fontFamily: "'FF Nort', sans-serif" }}>
                     The Path to<br />Production.
                   </h2>
-                </div>
               </div>
-              <p className="text-brand-gray text-base sm:text-lg leading-relaxed">
+              <p className="text-gray-600 text-base sm:text-lg leading-relaxed font-light" style={{ fontFamily: "'FF Nort', sans-serif" }}>
                 We've removed the barriers. From feasibility to full-scale production in three comprehensive phases.
               </p>
             </div>
@@ -145,18 +142,19 @@ function StepCard({ number, label, title, description, color, labelColor, delay,
   return (
     <div
       ref={ref}
-      className="bg-gradient-to-br from-white via-brand-light to-white p-4 sm:p-5 md:p-6 rounded-xl sm:rounded-2xl reveal-on-scroll border-2 transition-all duration-500 hover:shadow-xl hover:-translate-y-1 relative overflow-hidden group"
+      className="bg-gradient-to-br from-white via-brand-light to-white p-4 sm:p-5 rounded-xl sm:rounded-2xl reveal-on-scroll border-2 transition-all duration-500 hover:shadow-xl hover:-translate-y-1 relative overflow-hidden group flex flex-col"
       style={{
         transitionDelay: delay,
-        borderColor: color
+        borderColor: color,
+        maxHeight: '280px'
       }}
     >
       <div className="absolute top-0 right-0 w-20 h-20 rounded-full blur-2xl opacity-20 group-hover:opacity-30 transition-opacity duration-500"
         style={{ backgroundColor: color }}
       ></div>
 
-      <div className="relative z-10">
-        <div className="mb-3">
+      <div className="relative z-10 flex flex-col flex-1">
+        <div className="mb-2">
           <span className={`${labelColor} text-xs font-bold uppercase tracking-widest block mb-1`}>
             {number}
           </span>
@@ -165,14 +163,14 @@ function StepCard({ number, label, title, description, color, labelColor, delay,
           </span>
         </div>
 
-        <h3 className="text-lg sm:text-xl font-bold mb-2 text-brand-black group-hover:scale-[1.02] transition-transform duration-300">
+        <h3 className="text-base sm:text-lg font-medium mb-1.5 text-gray-900 group-hover:scale-[1.02] transition-transform duration-300 overflow-hidden" style={{ fontFamily: "'FF Nort', sans-serif", maxHeight: '3.5rem' }}>
           {title}
         </h3>
-        <p className="text-brand-gray text-xs sm:text-sm leading-relaxed mb-4">{description}</p>
+        <p className="text-gray-600 text-xs leading-relaxed mb-3 font-light flex-1 overflow-hidden" style={{ fontFamily: "'FF Nort', sans-serif", maxHeight: '2.5rem' }}>{description}</p>
 
         <button
           onClick={() => navigate(`/path-to-production/${id}`)}
-          className={`inline-flex items-center gap-2 ${labelColor} font-semibold text-xs hover:gap-3 transition-all group/btn`}
+          className={`inline-flex items-center gap-2 ${labelColor} font-semibold text-xs hover:gap-3 transition-all group/btn mt-auto`}
         >
           View More
           <ArrowRight className="w-3 h-3 group-hover/btn:translate-x-1 transition-transform" />

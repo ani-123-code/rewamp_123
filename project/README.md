@@ -7,7 +7,7 @@ A modern, full-stack web application for Flownetics Engineering, featuring conti
 - **Frontend**: React 18, TypeScript, Vite, Tailwind CSS
 - **Backend**: Node.js, Express.js
 - **Database**: MongoDB (with GridFS for image storage)
-- **Email**: Mailgun
+- **Email**: Gmail API (OAuth2)
 - **Deployment**: Railway
 
 ## Features
@@ -26,7 +26,7 @@ A modern, full-stack web application for Flownetics Engineering, featuring conti
 
 - Node.js 18+ 
 - MongoDB database (MongoDB Atlas recommended)
-- Mailgun account for email functionality
+- Gmail API credentials for email functionality (see [server/README.md](./server/README.md))
 
 ### Installation
 
@@ -49,6 +49,33 @@ A modern, full-stack web application for Flownetics Engineering, featuring conti
    # Terminal 2 - Backend
    cd server && npm run dev
    ```
+
+## Troubleshooting
+
+### ERR_CONNECTION_REFUSED Error
+
+If you see `ERR_CONNECTION_REFUSED` when trying to download the ROI report:
+
+1. **Ensure the backend server is running:**
+   ```bash
+   cd server
+   npm start
+   ```
+   The server should start on `http://localhost:3001`
+
+2. **Check environment variables:**
+   - Verify `server/.env` file exists with all required variables
+   - See [server/README.md](./server/README.md) for required variables
+
+3. **Check MongoDB connection:**
+   - Ensure MongoDB is running (local or Atlas)
+   - Verify `MONGODB_URI` in `server/.env` is correct
+
+4. **Check Gmail API credentials:**
+   - Verify all Gmail OAuth2 credentials are set in `server/.env`
+   - See [server/README.md](./server/README.md) for Gmail API setup
+
+For more troubleshooting, see [server/README.md](./server/README.md)
 
 ## Project Structure
 
@@ -79,12 +106,16 @@ See [DEPLOYMENT.md](./DEPLOYMENT.md) for Railway deployment instructions.
 - `PORT` - Server port (default: 3001)
 - `NODE_ENV` - Environment (production/development)
 - `MONGODB_URI` - MongoDB connection string
-- `MAILGUN_API_KEY` - Mailgun API key
-- `MAILGUN_DOMAIN` - Mailgun domain
+- `GMAIL_CLIENT_ID` - Gmail OAuth2 Client ID
+- `GMAIL_CLIENT_SECRET` - Gmail OAuth2 Client Secret
+- `GMAIL_REFRESH_TOKEN` - Gmail OAuth2 Refresh Token
+- `GMAIL_USER` - Gmail account email address
+
+See [server/README.md](./server/README.md) for detailed setup instructions.
 
 ## Admin Access
 
-- URL: `/admin`
+- URL: `/gdhjeuebd/snhdhftT`
 - Username: `flownetics`
 - Password: `Flow@AV_2025`
 

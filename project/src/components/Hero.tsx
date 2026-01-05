@@ -1,67 +1,46 @@
-import { useState, useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { ArrowRight, FlaskConical } from 'lucide-react';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 
 export default function Hero() {
-  const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const heroRef = useScrollReveal<HTMLDivElement>();
-  const flowTextRef = useRef<HTMLDivElement>(null);
-  const changingWordRef = useRef<HTMLSpanElement>(null);
-  const wrapperRef = useRef<HTMLSpanElement>(null);
-
-  const rotatingWords = ['Chemistry', 'Manufacturing', 'Production', 'Scale-up'];
-  const flowPhrase = "Means Going With the Flow.";
+  const animatedLineRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
-    // Rotating words animation
-    const interval = setInterval(() => {
-      setCurrentWordIndex((prev) => (prev + 1) % rotatingWords.length);
-    }, 3000);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    // Flow text animation - split into words and characters
-    if (flowTextRef.current) {
-      const words = flowPhrase.split(' ');
-      let charCount = 0;
+    // Animate the entire second line
+    if (animatedLineRef.current) {
+      const phrases = [
+        { word: 'Chemistry', full: 'Smart Chemistry Means Going With the Flow.' },
+        { word: 'Manufacturing', full: 'Smart Manufacturing Means Going With the Flow.' },
+        { word: 'Scale‑up', full: 'Smart Scale‑up Means Going With the Flow.' }
+      ];
       
-      const wrappedHtml = words.map(word => {
-        const letters = word.split('').map(char => {
-          return `<span class="char" style="--char-index: ${charCount++}">${char}</span>`;
-        }).join('');
-        return `<span class="word">${letters}</span>`;
-      }).join('');
+      let phraseIndex = 0;
+      
+      const updatePhrase = () => {
+        const phrase = phrases[phraseIndex];
+        const parts = phrase.full.split(phrase.word);
+        animatedLineRef.current!.innerHTML = `${parts[0]}<span class="font-medium text-brand-green">${phrase.word}</span>${parts[1]}`;
+      };
 
-      flowTextRef.current.innerHTML = wrappedHtml;
-      flowTextRef.current.classList.remove('opacity-0');
-    }
-  }, []);
-
-  useEffect(() => {
-    // Changing word animation - only the word after "Smart" changes
-    if (wrapperRef.current && changingWordRef.current) {
-      const words = ['Chemistry', 'Manufacturing', 'Production', 'Scale-up'];
-      let wordIndex = 0;
-
-      // Set initial word
-      changingWordRef.current.textContent = words[wordIndex];
+      // Set initial phrase
+      updatePhrase();
+      animatedLineRef.current.style.opacity = '1';
 
       const interval = setInterval(() => {
-        // Fade out & slide down
-        wrapperRef.current!.style.opacity = '0';
-        wrapperRef.current!.style.transform = 'translateY(10px)';
-        
+        // Fade out
+        animatedLineRef.current!.style.opacity = '0';
+        animatedLineRef.current!.style.transform = 'translateY(10px)';
+
         setTimeout(() => {
-          // Change word
-          wordIndex = (wordIndex + 1) % words.length;
-          changingWordRef.current!.textContent = words[wordIndex];
-          
-          // Fade in & slide up
-          wrapperRef.current!.style.opacity = '1';
-          wrapperRef.current!.style.transform = 'translateY(0)';
-        }, 500);
+          // Change to next phrase
+          phraseIndex = (phraseIndex + 1) % phrases.length;
+          updatePhrase();
+
+          // Fade in
+          animatedLineRef.current!.style.opacity = '1';
+          animatedLineRef.current!.style.transform = 'translateY(0)';
+        }, 300);
       }, 3000);
 
       return () => clearInterval(interval);
@@ -70,104 +49,83 @@ export default function Hero() {
 
   return (
     <>
-      <section className="relative min-h-[110vh] flex flex-col justify-center items-center px-6 pt-20 overflow-hidden bg-white">
+      <section className="relative min-h-[100vh] flex flex-col justify-center items-center px-4 sm:px-6 md:px-8 pt-8 sm:pt-12 pb-8 sm:pb-12 overflow-hidden bg-gradient-to-b from-white to-gray-50/30">
         {/* Dynamic Background Elements */}
         <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
-          {/* Technical Grid */}
-          <div 
-            className="absolute inset-0"
-            style={{
-              backgroundImage: `
-                linear-gradient(to right, rgba(128, 128, 128, 0.08) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(128, 128, 128, 0.08) 1px, transparent 1px)
-              `,
-              backgroundSize: '40px 40px',
-              maskImage: 'radial-gradient(ellipse at center, black 40%, transparent 100%)'
-            }}
-          />
-          
-          {/* Animated Gradient Blobs */}
-          <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-brand-purple/20 rounded-full mix-blend-multiply filter blur-[120px] animate-blob opacity-40"></div>
-          <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-brand-green/20 rounded-full mix-blend-multiply filter blur-[120px] animate-blob animation-delay-2000 opacity-40"></div>
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-brand-orange/20 rounded-full mix-blend-multiply filter blur-[120px] animate-blob animation-delay-4000 opacity-30"></div>
+          {/* Animated Gradient Blobs - More subtle and white */}
+          <div className="absolute top-0 right-0 w-[400px] sm:w-[600px] md:w-[800px] h-[400px] sm:h-[600px] md:h-[800px] bg-gray-200/20 rounded-full mix-blend-multiply filter blur-[80px] sm:blur-[100px] md:blur-[120px] animate-blob opacity-20"></div>
+          <div className="absolute bottom-0 left-0 w-[300px] sm:w-[500px] md:w-[600px] h-[300px] sm:h-[500px] md:h-[600px] bg-gray-300/15 rounded-full mix-blend-multiply filter blur-[80px] sm:blur-[100px] md:blur-[120px] animate-blob animation-delay-2000 opacity-20"></div>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[300px] sm:w-[500px] md:w-[600px] h-[300px] sm:h-[500px] md:h-[600px] bg-gray-200/15 rounded-full mix-blend-multiply filter blur-[80px] sm:blur-[100px] md:blur-[120px] animate-blob animation-delay-4000 opacity-15"></div>
         </div>
 
-        <div ref={heroRef} className="relative z-10 max-w-5xl text-center reveal-on-scroll flex flex-col items-center">
+        <div ref={heroRef} className="relative z-10 max-w-5xl text-center reveal-on-scroll flex flex-col items-center w-full">
           
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/50 backdrop-blur-md border border-gray-200 mb-10 shadow-sm transition-all hover:scale-105 cursor-default hover:border-brand-purple/30">
-            <span className="relative flex h-2 w-2">
+          <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-white/50 backdrop-blur-md border border-gray-200 mb-4 sm:mb-6 shadow-sm transition-all hover:scale-105 cursor-default hover:border-brand-purple/30">
+            <span className="relative flex h-1.5 sm:h-2 w-1.5 sm:w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-purple opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-brand-purple"></span>
+              <span className="relative inline-flex rounded-full h-1.5 sm:h-2 w-1.5 sm:w-2 bg-brand-purple"></span>
             </span>
-            <span className="text-xs font-bold tracking-wide uppercase text-gray-600">The Future of Continuous Flow</span>
+            <span className="text-[10px] sm:text-xs font-semibold tracking-wide uppercase text-gray-600">The Future of Continuous Flow</span>
           </div>
 
           {/* Enhanced Typography */}
-          <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tighter leading-[1.1] mb-8 text-brand-black relative">
+          <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl xl:text-8xl font-light tracking-tighter leading-[1.1] mb-6 sm:mb-8 text-brand-black relative w-full">
             {/* Abstract Flow Line SVG behind text */}
-            <svg className="absolute -top-20 -left-20 w-[120%] h-[150%] -z-10 opacity-40 pointer-events-none text-brand-purple" viewBox="0 0 400 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <svg className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[150%] -z-10 opacity-50 sm:opacity-60 pointer-events-none text-brand-purple hidden sm:block" viewBox="0 0 400 200" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M-50 100 C 50 100, 100 0, 200 100 S 350 200, 450 100" stroke="url(#paint0_linear)" strokeWidth="2" strokeLinecap="round" className="animate-flow-dash" strokeDasharray="10 10"/>
               <defs>
                 <linearGradient id="paint0_linear" x1="0" y1="0" x2="400" y2="0" gradientUnits="userSpaceOnUse">
-                  <stop stopColor="#e07742" stopOpacity="0.2"/>
-                  <stop offset="0.5" stopColor="#702594" stopOpacity="0.5"/>
-                  <stop offset="1" stopColor="#057210" stopOpacity="0.2"/>
+                  <stop stopColor="#e07742" stopOpacity="0.4"/>
+                  <stop offset="0.5" stopColor="#702594" stopOpacity="0.7"/>
+                  <stop offset="1" stopColor="#057210" stopOpacity="0.4"/>
                 </linearGradient>
               </defs>
             </svg>
 
-            Join the <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-purple via-brand-purple to-brand-green">Flow Revolution.</span><br/>
-            
-            <div className="text-4xl md:text-6xl lg:text-7xl mt-2 font-semibold text-brand-black/90">
-              Smart{' '}
-              <span className="inline-block min-w-[300px] text-center align-bottom mx-2 relative group">
-                {/* Underline with Glow */}
-                <span ref={wrapperRef} className="relative inline-block transition-all duration-500" style={{ opacity: 1 }}>
-                  <span ref={changingWordRef} className="text-brand-purple relative z-10 filter drop-shadow-sm">Chemistry</span>
-                  <div className="absolute -bottom-2 left-0 w-full h-[6px] bg-brand-purple/20 rounded-full blur-sm group-hover:bg-brand-purple/40 transition-all"></div>
-                  <div className="absolute -bottom-2 left-0 w-full h-[2px] bg-brand-purple rounded-full"></div>
-                </span>
-            </span>
+            <div className="text-center w-full text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl">
+              Join the <span className="font-medium text-transparent bg-clip-text bg-gradient-to-r from-brand-purple via-brand-purple to-brand-green">Flow Revolution.</span>
+            </div>
+
+            <div className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl 2xl:text-6xl mt-1 sm:mt-2 font-light text-brand-black/90 flex items-baseline justify-center w-full px-2">
+              <span ref={animatedLineRef} className="text-center transition-all duration-300 break-words sm:whitespace-nowrap" style={{ opacity: 0, transform: 'translateY(0)' }}>
+                Smart Chemistry Means Going With the Flow.
+              </span>
             </div>
           </h1>
 
-          <div className="h-8">
-            <span ref={flowTextRef} className="text-xl md:text-2xl text-brand-gray/80 font-bold tracking-tight opacity-0"></span>
-          </div>
-
           {/* Subtext */}
-          <p className="text-lg md:text-xl text-gray-500 font-normal max-w-2xl mx-auto leading-relaxed mt-8 mb-12">
-            Accelerate from gram-scale R&D to ton-scale production. <br className="hidden md:block"/>
-            Zero scale-up risks. <span className="text-brand-black font-semibold">40% lower CapEx.</span>
+          <p className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-500 font-light max-w-2xl mx-auto leading-relaxed mt-4 sm:mt-6 md:mt-8 mb-8 sm:mb-10 md:mb-12 px-4">
+            Accelerate from gram-scale R&D to ton-scale production. <br className="hidden sm:block"/>
+            Zero scale-up risks. <span className="text-brand-black font-medium">40% lower CapEx.</span>
           </p>
 
           {/* Buttons & Social Proof */}
-          <div className="flex flex-col items-center gap-8 w-full">
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center w-full">
-            <button
-              onClick={() => {
-                const element = document.querySelector('#ai-architect');
-                if (element) {
-                  element.scrollIntoView({ behavior: 'smooth' });
-                }
-              }}
-                className="bg-brand-black text-white px-8 py-4 rounded-2xl text-sm font-semibold hover:bg-gray-800 transition-all shadow-xl hover:shadow-2xl hover:-translate-y-1 min-w-[200px] flex items-center justify-center gap-2 group"
-            >
-              Start Feasibility Audit
-                <FlaskConical className="w-4 h-4 text-brand-green group-hover:rotate-12 transition-transform" />
-            </button>
-            <button
-              onClick={() => {
-                const element = document.querySelector('#pillars');
-                if (element) {
-                  element.scrollIntoView({ behavior: 'smooth' });
-                }
-              }}
-                className="glass-panel text-brand-black px-8 py-4 rounded-2xl text-sm font-medium hover:bg-white border border-gray-200 hover:border-brand-purple/50 transition-all flex items-center gap-2 min-w-[200px] justify-center backdrop-blur-sm"
-            >
-              Explore Platform <ArrowRight className="w-4 h-4 text-brand-purple" />
-            </button>
+          <div className="flex flex-col items-center gap-4 sm:gap-6 md:gap-8 w-full px-4">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-stretch sm:items-center w-full max-w-2xl">
+              <button
+                onClick={() => {
+                  const element = document.querySelector('#ai-architect');
+                  if (element) {
+                    element.scrollIntoView({ behavior: 'smooth' });
+                  }
+                }}
+                className="bg-brand-black text-white px-5 sm:px-6 md:px-8 py-2.5 sm:py-3 md:py-4 rounded-lg sm:rounded-xl md:rounded-2xl text-xs sm:text-sm font-medium hover:bg-gradient-purple transition-all shadow-lg hover:shadow-xl hover:-translate-y-1 w-full sm:w-auto sm:min-w-[180px] md:min-w-[200px] flex items-center justify-center gap-2 group"
+              >
+              <span className="text-center">Check Sustainability Score</span>
+                <FlaskConical className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-brand-green group-hover:rotate-12 transition-transform flex-shrink-0" />
+              </button>
+              <button
+                onClick={() => {
+                  const element = document.querySelector('#pillars');
+                  if (element) {
+                    element.scrollIntoView({ behavior: 'smooth' });
+                  }
+                }}
+                className="bg-brand-black text-white px-5 sm:px-6 md:px-8 py-2.5 sm:py-3 md:py-4 rounded-lg sm:rounded-xl md:rounded-2xl text-xs sm:text-sm font-medium hover:bg-gradient-purple transition-all shadow-lg hover:shadow-xl hover:-translate-y-1 flex items-center gap-2 w-full sm:w-auto sm:min-w-[180px] md:min-w-[200px] justify-center"
+              >
+              <span>Explore Platform</span> <ArrowRight className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-white flex-shrink-0" />
+              </button>
             </div>
           </div>
         </div>

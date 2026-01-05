@@ -74,7 +74,7 @@ export default function DownloadModal({ isOpen, onClose, onDownload }: DownloadM
         <div className="p-6">
           <div className="mb-6">
             <div className="w-12 h-12 rounded-full bg-gradient-to-r from-brand-orange via-brand-purple to-brand-green opacity-80 mb-4"></div>
-            <h2 className="text-2xl font-bold text-brand-black mb-2">Download ROI Report</h2>
+            <h2 className="text-2xl font-bold text-brand-black mb-2">Get Your ROI Report</h2>
             <p className="text-sm text-brand-gray">Enter your details to receive the comprehensive ROI analysis report via email.</p>
           </div>
 
@@ -162,13 +162,13 @@ export default function DownloadModal({ isOpen, onClose, onDownload }: DownloadM
               ) : (
                 <>
                   <Download className="w-5 h-5" />
-                  <span>Download Report</span>
+                  <span>Get Report</span>
                 </>
               )}
             </button>
 
             <p className="text-xs text-center text-brand-gray mt-4">
-              By downloading, you agree to receive communications from Flownetics Engineering.
+              By requesting the report, you agree to receive communications from Flownetics Engineering.
             </p>
           </form>
         </div>

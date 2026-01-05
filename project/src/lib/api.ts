@@ -105,20 +105,49 @@ export async function downloadROIReport(data: {
   email: string;
   reportData: any;
 }) {
-  const response = await fetch(`${API_BASE_URL}/api/download-roi`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(data),
-  });
+  // Create abort controller for timeout
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
 
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error || 'Failed to send report');
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/download-roi`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+      signal: controller.signal,
+    });
+
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
+      let errorMessage = 'Failed to send report';
+      try {
+        const error = await response.json();
+        errorMessage = error.error || errorMessage;
+      } catch {
+        // If response is not JSON, use status text
+        errorMessage = `Server error: ${response.status} ${response.statusText}`;
+      }
+      throw new Error(errorMessage);
+    }
+
+    return response.json();
+  } catch (error: unknown) {
+    clearTimeout(timeoutId);
+    if (error instanceof Error) {
+      // Handle network errors
+      if (error.name === 'AbortError') {
+        throw new Error('Request timeout. Please check your internet connection and try again.');
+      }
+      if (error.message.includes('Failed to fetch') || error.message.includes('ERR_CONNECTION_REFUSED') || error.message.includes('NetworkError')) {
+        throw new Error('Cannot connect to server. Please ensure the backend server is running. Start it with: cd server && npm start');
+      }
+      throw error;
+    }
+    throw new Error('An unexpected error occurred while sending the report');
   }
-
-  return response.json();
 }
 
 export async function getROIDownloads(token: string) {

@@ -1,32 +1,39 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { pillars } from './Pillars';
+import SEO from './SEO';
 
 export default function PillarDetail() {
   const { pillarId } = useParams<{ pillarId: string }>();
   const navigate = useNavigate();
-  const pillar = pillars.find((p) => p.id === parseInt(pillarId || '0'));
+  const currentPillarId = parseInt(pillarId || '0');
+  const pillar = pillars.find((p) => p.id === currentPillarId);
+  const currentIndex = pillars.findIndex((p) => p.id === currentPillarId);
+  const nextPillar = currentIndex < pillars.length - 1 ? pillars[currentIndex + 1] : null;
+  const isLastPillar = currentIndex === pillars.length - 1;
 
   const handleBackClick = () => {
-    navigate('/');
+    navigate('/', { state: { scrollToPillar: currentPillarId } });
     setTimeout(() => {
       const pillarsSection = document.getElementById('pillars');
       if (pillarsSection) {
         pillarsSection.scrollIntoView({ behavior: 'smooth' });
+        // Trigger the pillar selection after scroll
+        setTimeout(() => {
+          const event = new CustomEvent('selectPillar', { detail: { pillarId: currentPillarId } });
+          window.dispatchEvent(event);
+        }, 500);
       }
     }, 100);
   };
 
-  const handleContactClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    navigate('/');
-    setTimeout(() => {
-      const contactSection = document.getElementById('contact');
-      if (contactSection) {
-        contactSection.scrollIntoView({ behavior: 'smooth' });
+  const handleNextClick = () => {
+    if (nextPillar) {
+      navigate(`/pillar/${nextPillar.id}`);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       }
-    }, 100);
   };
+
 
   if (!pillar) {
     return (
@@ -44,174 +51,281 @@ export default function PillarDetail() {
     );
   }
 
+  const accentColorClass = pillar.accentColor.includes('orange') ? 'text-brand-orange' :
+                          pillar.accentColor.includes('purple') ? 'text-brand-purple' :
+                          'text-brand-green';
+  
+  const accentBorderClass = pillar.accentColor.includes('orange') ? 'border-brand-orange' :
+                           pillar.accentColor.includes('purple') ? 'border-brand-purple' :
+                           'border-brand-green';
+  
+  // Use gradient similar to hero section (purple to green)
+  const accentBgGradient = 'from-brand-purple/10 via-white to-brand-green/5';
+  const accentCardGradient = 'from-brand-purple/5 via-white to-brand-green/5';
+  
+  const accentColorValue = pillar.accentColor.includes('orange') ? '#e07742' :
+                          pillar.accentColor.includes('purple') ? '#702594' :
+                          '#057210';
+
+  const pillarUrl = `https://flownetics.com/pillar/${pillar.id}`;
+  const pillarDescription = `Learn about ${pillar.title} - ${pillar.description.substring(0, 150)}...`;
+
   return (
-    <div className="min-h-screen bg-white">
-      <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-brand-purple text-white">
-        <div className="max-w-6xl mx-auto px-6 py-12">
+    <div className="min-h-screen bg-white relative overflow-hidden">
+      <SEO
+        title={`${pillar.title} - Flow Chemistry Solutions | Flownetics`}
+        description={pillarDescription}
+        keywords={`${pillar.title}, flow chemistry, continuous flow chemistry, ${pillar.title.toLowerCase()}, chemical manufacturing, process optimization, Flownetics, flow chemistry technology`}
+        url={pillarUrl}
+        structuredData={{
+          "@context": "https://schema.org",
+          "@type": "Article",
+          "headline": pillar.title,
+          "description": pillarDescription,
+          "url": pillarUrl,
+          "author": {
+            "@type": "Organization",
+            "name": "Flownetics Engineering"
+          }
+        }}
+      />
+      {/* Dynamic Background Elements - Similar to Hero */}
+      <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+        <div className="absolute top-0 right-0 w-[400px] sm:w-[600px] md:w-[800px] h-[400px] sm:h-[600px] md:h-[800px] bg-gray-200/20 rounded-full mix-blend-multiply filter blur-[80px] sm:blur-[100px] md:blur-[120px] animate-blob opacity-20"></div>
+        <div className="absolute bottom-0 left-0 w-[300px] sm:w-[500px] md:w-[600px] h-[300px] sm:h-[500px] md:h-[600px] bg-gray-300/15 rounded-full mix-blend-multiply filter blur-[80px] sm:blur-[100px] md:blur-[120px] animate-blob animation-delay-2000 opacity-20"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[300px] sm:w-[500px] md:w-[600px] h-[300px] sm:h-[500px] md:h-[600px] bg-gray-200/15 rounded-full mix-blend-multiply filter blur-[80px] sm:blur-[100px] md:blur-[120px] animate-blob animation-delay-4000 opacity-15"></div>
+      </div>
+
+      {/* Header Section */}
+      <div className="relative z-10 w-full px-4 sm:px-6 lg:px-8 pt-20 sm:pt-24 md:pt-28 pb-8 sm:pb-12">
+        <div className="max-w-7xl mx-auto">
+          {/* Navigation Buttons */}
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4 mb-6 sm:mb-8 md:mb-12">
           <button
             onClick={handleBackClick}
-            className="inline-flex items-center text-white/80 hover:text-white transition-all duration-300 mb-12 group font-medium"
+              className="inline-flex items-center justify-center gap-2 px-4 lg:px-6 py-2 lg:py-3 rounded-2xl bg-brand-black text-white text-xs font-medium hover:bg-gradient-purple transition-all shadow-lg group"
+              style={{ fontFamily: "'FF Nort', sans-serif" }}
           >
-            <ArrowLeft className="w-5 h-5 mr-2 group-hover:-translate-x-1 transition-transform duration-300" />
-            Back to Home
+              <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform duration-300 flex-shrink-0" />
+              <span className="whitespace-nowrap">Back to Pillars</span>
           </button>
 
+            {!isLastPillar && nextPillar && (
+              <button
+                onClick={handleNextClick}
+                className="inline-flex items-center justify-center gap-2 px-4 lg:px-6 py-2 lg:py-3 rounded-2xl bg-brand-black text-white text-xs font-medium hover:bg-gradient-purple transition-all shadow-lg group"
+                style={{ fontFamily: "'FF Nort', sans-serif" }}
+              >
+                <span className="whitespace-nowrap">Next: {nextPillar.title}</span>
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300 flex-shrink-0" />
+              </button>
+            )}
+          </div>
+
+          {/* Title Section */}
+          <div className={`bg-gradient-to-br ${accentBgGradient} border-2 ${accentBorderClass}/30 rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-10 lg:p-12 mb-8 sm:mb-12 md:mb-16 shadow-xl`}>
           <div className="max-w-4xl">
-            <span className="inline-block text-sm font-bold uppercase tracking-widest text-brand-orange mb-6">
+              <span className={`inline-block text-xs sm:text-sm font-medium uppercase tracking-widest ${accentColorClass} mb-3 sm:mb-4`}
+                style={{ fontFamily: "'FF Nort', sans-serif" }}>
               {pillar.number}
             </span>
-            <h1 className="text-5xl md:text-7xl font-bold mb-6 tracking-tight leading-tight">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-light mb-3 sm:mb-4 md:mb-6 tracking-tight leading-tight text-gray-900"
+                style={{ fontFamily: "'FF Nort', sans-serif" }}>
               {pillar.title}
             </h1>
-            <p className="text-2xl md:text-3xl text-white/90 font-light leading-relaxed">
+              <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-gray-800 font-light leading-relaxed"
+                style={{ fontFamily: "'FF Nort', sans-serif" }}>
               {pillar.description}
             </p>
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-6 py-20">
-        <div className="grid md:grid-cols-3 gap-8 mb-20">
-          <div className="md:col-span-2">
-            <h2 className="text-4xl font-bold text-gray-900 mb-6">Overview</h2>
-            <div className="space-y-6 text-lg text-gray-700 leading-relaxed">
-              <p>
-                Our approach to {pillar.title.toLowerCase()} represents years of research and development
-                in advanced flow chemistry technology. This pillar is fundamental to delivering exceptional
-                results in continuous manufacturing.
-              </p>
-              <p className="text-xl font-medium text-gray-900">
-                {pillar.detailedDescription}
-              </p>
-              <p>
-                This pillar forms a critical foundation of our commitment to delivering world-class
-                continuous flow solutions that transform chemical manufacturing processes across industries.
-              </p>
-            </div>
-          </div>
-
-          <div className="bg-gradient-to-br from-brand-purple to-brand-orange p-8 rounded-2xl text-white h-fit">
-            <h3 className="text-2xl font-bold mb-6">Key Metrics</h3>
-            <div className="space-y-6">
-              <div>
-                <div className="text-5xl font-bold mb-2">40%</div>
-                <div className="text-white/90">Time Savings</div>
-              </div>
-              <div>
-                <div className="text-5xl font-bold mb-2">35%</div>
-                <div className="text-white/90">Cost Reduction</div>
-              </div>
-              <div>
-                <div className="text-5xl font-bold mb-2">99.8%</div>
-                <div className="text-white/90">Quality Score</div>
+      {/* Content Section */}
+      <div className="relative z-10 w-full px-4 sm:px-6 lg:px-8 pb-20">
+        <div className="max-w-7xl mx-auto">
+          {/* Overview */}
+          {pillar.overview && (
+            <div className="mb-8 sm:mb-12 md:mb-16 lg:mb-20">
+              <h2 className="text-xs font-semibold text-gray-800 uppercase tracking-wider mb-3 sm:mb-4"
+                style={{ fontFamily: "'FF Nort', sans-serif" }}>
+                Overview
+              </h2>
+              <div className={`bg-gradient-to-br ${accentCardGradient} rounded-xl sm:rounded-2xl p-6 sm:p-8 md:p-10 lg:p-12 border-2 ${accentBorderClass}/40 shadow-xl hover:shadow-2xl transition-all duration-300`}>
+                <p className="text-gray-800 text-sm sm:text-base leading-relaxed font-light"
+                  style={{ fontFamily: "'FF Nort', sans-serif" }}>
+                  {pillar.overview}
+                </p>
               </div>
             </div>
-          </div>
-        </div>
+          )}
 
-        <div className="mb-20">
-          <h2 className="text-4xl font-bold text-gray-900 mb-10">Technical Capabilities</h2>
-          <div className="grid md:grid-cols-2 gap-6">
-            {[
-              {
-                title: 'Real-Time Analytics',
-                description: 'State-of-the-art monitoring systems with comprehensive data visualization and reporting capabilities.'
-              },
-              {
-                title: 'Advanced Automation',
-                description: 'Intelligent protocols ensuring consistent, repeatable results with minimal operator intervention.'
-              },
-              {
-                title: 'Scalable Architecture',
-                description: 'Designed for seamless growth from laboratory scale to full production capacity.'
-              },
-              {
-                title: 'System Integration',
-                description: 'Compatible with existing laboratory and manufacturing infrastructure for smooth deployment.'
-              },
-              {
-                title: 'Regulatory Compliance',
-                description: 'Comprehensive data logging and documentation for meeting industry standards and requirements.'
-              },
-              {
-                title: 'Process Optimization',
-                description: 'Continuous monitoring and adjustment capabilities for maximum efficiency and yield.'
-              }
-            ].map((item, index) => (
+          {/* Technical Capabilities */}
+          {pillar.technicalCapabilities && pillar.technicalCapabilities.length > 0 && (
+            <div className="mb-8 sm:mb-12 md:mb-16 lg:mb-20">
+              <h2 className="text-xs font-semibold text-gray-800 uppercase tracking-wider mb-3 sm:mb-4"
+                style={{ fontFamily: "'FF Nort', sans-serif" }}>
+                Technical Capabilities
+              </h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 md:gap-6">
+                {pillar.technicalCapabilities.map((capability, index) => (
               <div
                 key={index}
-                className="p-6 bg-gray-50 rounded-xl border-l-4 border-brand-orange hover:bg-white hover:shadow-lg transition-all duration-300"
-              >
-                <h3 className="text-xl font-bold text-gray-900 mb-3">{item.title}</h3>
-                <p className="text-gray-700 leading-relaxed">{item.description}</p>
+                    className={`bg-white rounded-xl sm:rounded-2xl p-5 sm:p-6 md:p-7 border-l-4 ${accentBorderClass} hover:shadow-2xl transition-all duration-300 border-r border-t border-b border-gray-200 group`}
+                    style={{
+                      borderLeftWidth: '4px',
+                      borderLeftColor: accentColorValue
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.borderRightColor = accentColorValue;
+                      e.currentTarget.style.borderTopColor = accentColorValue;
+                      e.currentTarget.style.borderBottomColor = accentColorValue;
+                      e.currentTarget.style.transform = 'translateY(-2px)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.borderRightColor = 'rgb(229, 231, 235)';
+                      e.currentTarget.style.borderTopColor = 'rgb(229, 231, 235)';
+                      e.currentTarget.style.borderBottomColor = 'rgb(229, 231, 235)';
+                      e.currentTarget.style.transform = 'translateY(0)';
+                    }}
+                  >
+                    <p className="text-gray-800 leading-relaxed text-sm sm:text-base font-light"
+                      style={{ fontFamily: "'FF Nort', sans-serif" }}>
+                      {capability}
+                    </p>
               </div>
             ))}
           </div>
         </div>
+          )}
 
-        <div className="mb-20">
-          <h2 className="text-4xl font-bold text-gray-900 mb-10">Business Impact</h2>
-          <div className="bg-gradient-to-r from-gray-50 to-white p-10 rounded-2xl border border-gray-200">
-            <ul className="space-y-5 text-lg text-gray-700">
-              <li className="flex items-start">
-                <span className="text-brand-orange font-bold mr-4 text-2xl">→</span>
-                <span>Reduce time-to-market by up to 40% with accelerated development cycles</span>
+          {/* Business Impact */}
+          {pillar.businessImpact && pillar.businessImpact.length > 0 && (
+            <div className="mb-8 sm:mb-12 md:mb-16 lg:mb-20">
+              <h2 className="text-xs font-semibold text-gray-800 uppercase tracking-wider mb-3 sm:mb-4"
+                style={{ fontFamily: "'FF Nort', sans-serif" }}>
+                Business Impact
+              </h2>
+              <div className={`bg-gradient-to-br ${accentCardGradient} rounded-xl sm:rounded-2xl p-6 sm:p-8 md:p-10 lg:p-12 border-2 ${accentBorderClass}/40 shadow-xl hover:shadow-2xl transition-all duration-300`}>
+                <ul className="space-y-2 sm:space-y-3">
+                  {pillar.businessImpact.map((impact, index) => (
+                    <li key={index} className="flex items-start gap-2.5">
+                      <div 
+                        className="w-1.5 h-1.5 rounded-full mt-2 flex-shrink-0"
+                        style={{
+                          backgroundColor: accentColorValue
+                        }}
+                      ></div>
+                      <span className="text-gray-800 text-sm leading-relaxed font-light"
+                        style={{ fontFamily: "'FF Nort', sans-serif" }}>
+                        {impact}
+                      </span>
               </li>
-              <li className="flex items-start">
-                <span className="text-brand-orange font-bold mr-4 text-2xl">→</span>
-                <span>Minimize waste and maximize resource efficiency throughout production</span>
-              </li>
-              <li className="flex items-start">
-                <span className="text-brand-orange font-bold mr-4 text-2xl">→</span>
-                <span>Lower operational costs through intelligent automation and optimization</span>
-              </li>
-              <li className="flex items-start">
-                <span className="text-brand-orange font-bold mr-4 text-2xl">→</span>
-                <span>Improve product quality and ensure batch-to-batch consistency</span>
-              </li>
-              <li className="flex items-start">
-                <span className="text-brand-orange font-bold mr-4 text-2xl">→</span>
-                <span>Enable faster iteration and continuous process improvement</span>
-              </li>
+                  ))}
             </ul>
           </div>
         </div>
+          )}
 
-        <div className="mb-20">
-          <h2 className="text-4xl font-bold text-gray-900 mb-10">Key Benefits</h2>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[
-              'Industry-leading accuracy and precision',
-              'Comprehensive technical support',
-              'Proven production results',
-              'Seamless system integration',
-              'Continuous improvements',
-              'Expert technical team',
-              'Advanced analytics platform',
-              'Full regulatory compliance'
-            ].map((benefit, index) => (
+          {/* Key Benefits */}
+          {pillar.keyBenefits && pillar.keyBenefits.length > 0 && (
+            <div className="mb-8 sm:mb-12 md:mb-16 lg:mb-20">
+              <h2 className="text-xs font-semibold text-gray-800 uppercase tracking-wider mb-3 sm:mb-4"
+                style={{ fontFamily: "'FF Nort', sans-serif" }}>
+                Key Benefits
+              </h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 md:gap-6">
+                {pillar.keyBenefits.map((benefit, index) => (
               <div
                 key={index}
-                className="p-6 bg-white border-2 border-gray-200 rounded-xl hover:border-brand-purple transition-all duration-300 hover:shadow-xl"
-              >
-                <span className="text-lg font-medium text-gray-900">{benefit}</span>
+                    className="bg-white rounded-xl sm:rounded-2xl p-5 sm:p-6 md:p-7 border-2 border-gray-200 transition-all duration-300 hover:shadow-2xl group"
+                    style={{
+                      borderColor: 'rgb(229, 231, 235)',
+                      fontFamily: "'FF Nort', sans-serif"
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.borderColor = accentColorValue;
+                      e.currentTarget.style.transform = 'translateY(-2px)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.borderColor = 'rgb(229, 231, 235)';
+                      e.currentTarget.style.transform = 'translateY(0)';
+                    }}
+                  >
+                    <p className="text-gray-800 text-sm sm:text-base font-light leading-relaxed"
+                      style={{ fontFamily: "'FF Nort', sans-serif" }}>
+                      {benefit}
+                    </p>
               </div>
             ))}
           </div>
         </div>
+          )}
 
-        <div className="bg-gradient-to-r from-brand-purple to-brand-orange p-12 rounded-3xl text-white text-center">
-          <h2 className="text-4xl font-bold mb-4">Ready to Transform Your Process?</h2>
-          <p className="text-xl mb-8 text-white/90 max-w-2xl mx-auto">
-            Contact our team to discuss how {pillar.title.toLowerCase()} can deliver
-            measurable results for your manufacturing operations.
-          </p>
+          {/* Path to Production */}
+          {pillar.pathToProduction && pillar.pathToProduction.length > 0 && (
+            <div className="mb-8 sm:mb-12 md:mb-16 lg:mb-20">
+              <h2 className="text-xs font-semibold text-gray-800 uppercase tracking-wider mb-3 sm:mb-4"
+                style={{ fontFamily: "'FF Nort', sans-serif" }}>
+                Path to Production
+              </h2>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5 md:gap-6">
+                {pillar.pathToProduction.map((step, index) => (
+                  <div
+                    key={index}
+                    className={`bg-gradient-to-br ${accentCardGradient} rounded-xl sm:rounded-2xl p-6 sm:p-8 md:p-10 border-2 ${accentBorderClass}/40 shadow-xl hover:shadow-2xl transition-all duration-300 group relative overflow-hidden`}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.transform = 'translateY(-4px)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = 'translateY(0)';
+                    }}
+                  >
+                    <div className="flex items-center gap-4 mb-4">
+                      <div className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0"
+                        style={{
+                          backgroundColor: `${accentColorValue}20`
+                        }}
+                      >
+                        <span className={`text-xl font-medium ${accentColorClass}`}
+                          style={{ fontFamily: "'FF Nort', sans-serif" }}>
+                          {index + 1}
+                        </span>
+                      </div>
+                    </div>
+                    <h3 className="text-sm sm:text-base font-medium text-gray-800 mb-2"
+                      style={{ fontFamily: "'FF Nort', sans-serif" }}>
+                      {step}
+                    </h3>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Navigation Footer */}
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4 pt-6 sm:pt-8 border-t border-gray-200">
+            <button
+              onClick={handleBackClick}
+              className="inline-flex items-center justify-center gap-2 px-4 lg:px-6 py-2 lg:py-3 rounded-2xl bg-brand-black text-white text-xs font-medium hover:bg-gradient-purple transition-all shadow-lg group"
+              style={{ fontFamily: "'FF Nort', sans-serif" }}
+            >
+              <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform duration-300 flex-shrink-0" />
+              <span className="whitespace-nowrap">Back to Pillars</span>
+            </button>
+            
+            {!isLastPillar && nextPillar && (
           <button
-            onClick={handleContactClick}
-            className="inline-block bg-white text-brand-purple px-10 py-4 rounded-xl font-bold text-lg hover:bg-gray-100 transition-all hover:scale-105 shadow-lg"
+                onClick={handleNextClick}
+                className="inline-flex items-center justify-center gap-2 px-4 lg:px-6 py-2 lg:py-3 rounded-2xl bg-brand-black text-white text-xs font-medium hover:bg-gradient-purple transition-all shadow-lg group"
+                style={{ fontFamily: "'FF Nort', sans-serif" }}
           >
-            Get in Touch
+                <span className="whitespace-nowrap">Next: {nextPillar.title}</span>
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300 flex-shrink-0" />
           </button>
+            )}
+          </div>
         </div>
       </div>
     </div>

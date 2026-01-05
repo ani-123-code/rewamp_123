@@ -56,20 +56,18 @@ export default function Footer() {
 
   return (
     <>
-      <footer className="bg-brand-black text-white pt-8 pb-6 px-6">
+      <footer className="bg-gray-900 text-white pt-8 sm:pt-12 pb-6 sm:pb-8 px-4 sm:px-6">
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 mb-6 sm:mb-8">
             <div>
-              <div className="mb-3">
+              <div className="mb-3 sm:mb-4">
                 <img 
                   src="/media/footerimage-removebg-preview.png" 
                   alt="Flownetics Logo" 
-                  className="h-12 w-auto mb-3 object-contain"
+                  className="h-10 sm:h-12 w-auto mb-2 sm:mb-3 object-contain"
                 />
-               
-           
               </div>
-              <p className="text-gray-400 text-xs leading-relaxed mb-4">
+              <p className="text-gray-400 text-xs sm:text-sm leading-relaxed mb-3 sm:mb-4 font-light" style={{ fontFamily: "'FF Nort', sans-serif" }}>
                 Revolutionizing chemical manufacturing through continuous flow technology and AI-driven innovation.
               </p>
               <div className="flex gap-2">
@@ -77,24 +75,24 @@ export default function Footer() {
                   href="https://linkedin.com/company/flownetics"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-8 h-8 bg-brand-purple/20 flex items-center justify-center hover:bg-brand-purple transition-colors rounded"
+                  className="w-7 h-7 sm:w-8 sm:h-8 bg-brand-purple/20 flex items-center justify-center hover:bg-brand-purple transition-colors rounded"
                 >
-                  <Linkedin className="w-4 h-4" />
+                  <Linkedin className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 </a>
                 <a
                   href="https://instagram.com/flownetics"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-8 h-8 bg-brand-purple/20 flex items-center justify-center hover:bg-brand-purple transition-colors rounded"
+                  className="w-7 h-7 sm:w-8 sm:h-8 bg-brand-purple/20 flex items-center justify-center hover:bg-brand-purple transition-colors rounded"
                 >
-                  <Instagram className="w-4 h-4" />
+                  <Instagram className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 </a>
               </div>
             </div>
 
             <div>
-              <h4 className="text-base font-medium mb-3">Company</h4>
-              <ul className="space-y-2 text-xs text-gray-400 font-light">
+              <h4 className="text-sm sm:text-base font-medium mb-2 sm:mb-3" style={{ fontFamily: "'FF Nort', sans-serif" }}>Company</h4>
+              <ul className="space-y-1.5 sm:space-y-2 text-xs sm:text-sm text-gray-400 font-light" style={{ fontFamily: "'FF Nort', sans-serif" }}>
                 <li>
                   <a href="#about" onClick={(e) => handleNavClick(e, '#about')} className="hover:text-brand-purple transition-colors">
                     About Us
@@ -119,8 +117,8 @@ export default function Footer() {
             </div>
 
             <div>
-              <h4 className="text-base font-medium mb-3">Newsletter</h4>
-              <p className="text-gray-400 text-xs mb-3">
+              <h4 className="text-sm sm:text-base font-medium mb-2 sm:mb-3" style={{ fontFamily: "'FF Nort', sans-serif" }}>Newsletter</h4>
+              <p className="text-gray-400 text-xs sm:text-sm mb-2 sm:mb-3 font-light" style={{ fontFamily: "'FF Nort', sans-serif" }}>
                 Stay updated with the latest in flow chemistry and AI-driven innovation.
               </p>
               <form onSubmit={handleSubscribe} className="space-y-2">
@@ -131,25 +129,25 @@ export default function Footer() {
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="Enter your email"
                     required
-                    className="w-full px-3 py-2 bg-white/10 border border-brand-purple/30 rounded text-white placeholder-gray-500 focus:outline-none focus:border-brand-purple transition-colors text-xs"
+                    className="w-full px-2.5 sm:px-3 py-1.5 sm:py-2 bg-white/10 border border-brand-purple/30 rounded text-white placeholder-gray-500 focus:outline-none focus:border-brand-purple transition-colors text-xs"
                   />
                 </div>
                 <button
                   type="submit"
                   disabled={isSubscribing}
-                  className="w-full bg-brand-purple hover:bg-brand-purple/80 text-white px-3 py-2 rounded font-medium transition-colors flex items-center justify-center gap-2 text-xs disabled:opacity-50"
+                  className="w-full bg-brand-purple hover:bg-brand-purple/80 text-white px-2.5 sm:px-3 py-1.5 sm:py-2 rounded font-medium transition-colors flex items-center justify-center gap-1.5 sm:gap-2 text-xs disabled:opacity-50"
                 >
                   {isSubscribing ? 'Subscribing...' : 'Subscribe'}
                   <Send className="w-3 h-3" />
                 </button>
                 {subscribeMessage && (
-                  <p className={`text-xs ${subscribeMessage.includes('Thank you') ? 'text-green-400' : 'text-yellow-400'}`}>
+                  <p className={`text-[10px] sm:text-xs ${subscribeMessage.includes('Thank you') ? 'text-green-400' : 'text-yellow-400'}`}>
                     {subscribeMessage}
                   </p>
                 )}
               </form>
-              <div className="mt-4 pt-4 border-t border-white/10">
-                <div className="flex flex-col gap-1.5 text-xs text-gray-400">
+              <div className="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-white/10">
+                <div className="flex flex-col gap-1 sm:gap-1.5 text-[10px] sm:text-xs text-gray-400">
                   <button
                     onClick={() => setShowPrivacy(true)}
                     className="hover:text-brand-purple transition-colors text-left"
@@ -167,35 +165,35 @@ export default function Footer() {
             </div>
 
             <div>
-              <h4 className="text-base font-medium mb-3">Contact Us</h4>
-              <div className="space-y-2.5 text-xs text-gray-400 font-light">
-                <div className="flex items-start gap-2">
-                  <MapPin className="w-4 h-4 text-brand-purple flex-shrink-0 mt-0.5" />
+              <h4 className="text-sm sm:text-base font-medium mb-2 sm:mb-3" style={{ fontFamily: "'FF Nort', sans-serif" }}>Contact Us</h4>
+              <div className="space-y-2 sm:space-y-2.5 text-xs sm:text-sm text-gray-400 font-light" style={{ fontFamily: "'FF Nort', sans-serif" }}>
+                <div className="flex items-start gap-1.5 sm:gap-2">
+                  <MapPin className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-brand-purple flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="font-medium text-white mb-0.5">
+                    <p className="font-medium text-white mb-0.5 text-xs sm:text-sm">
                       FLOWNETICS Engineering Private Limited
                     </p>
-                    <p className="leading-relaxed">
+                    <p className="leading-relaxed text-xs sm:text-sm">
                       148/A, Industrial Suburb 1st Stage,<br />
                       Yeswanthpura-560022<br />
                       Bangalore, India
                     </p>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Mail className="w-4 h-4 text-brand-purple flex-shrink-0" />
+                <div className="flex items-center gap-1.5 sm:gap-2">
+                  <Mail className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-brand-purple flex-shrink-0" />
                   <a
                     href="mailto:sales@flownetics-engg.com"
-                    className="hover:text-white transition-colors"
+                    className="hover:text-white transition-colors text-xs sm:text-sm break-all"
                   >
                     sales@flownetics-engg.com
                   </a>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Phone className="w-4 h-4 text-brand-purple flex-shrink-0" />
+                <div className="flex items-center gap-1.5 sm:gap-2">
+                  <Phone className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-brand-purple flex-shrink-0" />
                   <a
                     href="tel:+919035021855"
-                    className="hover:text-white transition-colors"
+                    className="hover:text-white transition-colors text-xs sm:text-sm"
                   >
                     +91 90350 21855
                   </a>
@@ -204,9 +202,9 @@ export default function Footer() {
             </div>
           </div>
 
-          <div className="border-t border-white/10 pt-4 flex flex-col md:flex-row justify-between items-center gap-2 text-xs text-gray-400">
-            <p>&copy; 2024 Flownetics Engineering Private Limited. All rights reserved.</p>
-            <p>Engineered with precision and innovation.</p>
+          <div className="border-t border-white/10 pt-4 sm:pt-6 flex flex-col sm:flex-row justify-between items-center gap-2 sm:gap-4 text-xs sm:text-sm text-gray-400 font-light text-center sm:text-left" style={{ fontFamily: "'FF Nort', sans-serif" }}>
+            <p className="break-words">&copy; 2026 Flownetics Engineering Private Limited. All rights reserved.</p>
+            <p className="whitespace-nowrap">chemistry in motion.</p>
           </div>
         </div>
       </footer>

@@ -1,7 +1,8 @@
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Calendar, ArrowLeft } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { getBlogBySlug } from '../lib/api';
+import SEO from './SEO';
 
 interface BlogPost {
   _id: string;
@@ -17,8 +18,19 @@ interface BlogPost {
 }
 export default function BlogDetail() {
   const { blogId } = useParams<{ blogId: string }>();
+  const navigate = useNavigate();
   const [post, setPost] = useState<BlogPost | null>(null);
   const [loading, setLoading] = useState(true);
+
+  const handleBackToBlogs = () => {
+    navigate('/');
+    setTimeout(() => {
+      const blogSection = document.getElementById('blog');
+      if (blogSection) {
+        blogSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 100);
+  };
 
   useEffect(() => {
     const fetchBlog = async () => {
@@ -54,28 +66,63 @@ export default function BlogDetail() {
         <div className="text-center">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">Blog Post Not Found</h1>
           <p className="text-gray-600 mb-8">The blog post you're looking for doesn't exist.</p>
-          <Link
-            to="/#blog"
-            className="inline-flex items-center gap-2 text-brand-purple hover:text-brand-purple/80 font-semibold"
+          <button
+            onClick={handleBackToBlogs}
+            className="inline-flex items-center gap-2 text-brand-purple hover:text-brand-purple/80 font-semibold transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
-            Back to Blog
-          </Link>
+            Back to Blogs
+          </button>
         </div>
       </div>
     );
   }
 
+  const blogImage = post.image.startsWith('http') ? post.image : `${import.meta.env.VITE_API_URL || 'http://localhost:3001'}${post.image}`;
+  const blogUrl = `https://flownetics.com/blog/${post.slug}`;
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
-      <div className="max-w-4xl mx-auto px-6 py-16">
-        <Link
-          to="/#blog"
+      <SEO
+        title={`${post.title} | Flownetics Flow Chemistry Blog`}
+        description={post.excerpt}
+        keywords={`${post.category}, flow chemistry, continuous flow chemistry, batch chemistry, ${post.title.toLowerCase()}, chemical manufacturing, process optimization, Flownetics`}
+        image={blogImage}
+        url={blogUrl}
+        type="article"
+        structuredData={{
+          "@context": "https://schema.org",
+          "@type": "BlogPosting",
+          "headline": post.title,
+          "description": post.excerpt,
+          "image": blogImage,
+          "datePublished": post.date,
+          "author": {
+            "@type": "Organization",
+            "name": post.author
+          },
+          "publisher": {
+            "@type": "Organization",
+            "name": "Flownetics Engineering",
+            "logo": {
+              "@type": "ImageObject",
+              "url": "https://flownetics.com/media/flownetics.png"
+            }
+          },
+          "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": blogUrl
+          }
+        }}
+      />
+      <div className="max-w-6xl mx-auto px-6 pt-24 pb-16">
+        <button
+          onClick={handleBackToBlogs}
           className="inline-flex items-center gap-2 text-brand-purple hover:text-brand-purple/80 font-semibold mb-8 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
-          Back to Blog
-        </Link>
+          Back to Blogs
+        </button>
 
         <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
           <div className="relative h-96 overflow-hidden">
@@ -89,11 +136,11 @@ export default function BlogDetail() {
               }}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-            <div className="absolute bottom-0 left-0 right-0 p-8">
+            <div className="absolute bottom-0 left-0 right-0 p-8 md:p-12">
               <span className="inline-block bg-brand-purple text-white text-sm font-semibold px-4 py-2 rounded-full mb-4">
                 {post.category}
               </span>
-              <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 leading-tight">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 leading-tight">
                 {post.title}
               </h1>
                 <div className="flex items-center gap-4 text-white/90 text-sm">
@@ -109,9 +156,9 @@ export default function BlogDetail() {
             </div>
           </div>
 
-          <div className="p-8 md:p-12">
+          <div className="p-8 md:p-12 lg:p-16">
             <div className="prose prose-lg max-w-none">
-              <p className="text-xl text-gray-700 font-medium mb-8 leading-relaxed">
+              <p className="text-xl md:text-2xl text-gray-700 font-medium mb-8 leading-relaxed">
                 {post.excerpt}
               </p>
               <div
@@ -123,13 +170,13 @@ export default function BlogDetail() {
         </div>
 
         <div className="mt-12 text-center">
-          <Link
-            to="/#blog"
+          <button
+            onClick={handleBackToBlogs}
             className="inline-flex items-center gap-2 text-brand-purple hover:text-brand-purple/80 font-semibold text-lg transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
-            Back to All Articles
-          </Link>
+            Back to Blogs
+          </button>
         </div>
       </div>
 

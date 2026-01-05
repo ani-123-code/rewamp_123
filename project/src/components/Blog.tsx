@@ -61,24 +61,19 @@ export default function Blog() {
   };
 
   return (
-    <section id="blog" className="py-16 px-6 bg-gradient-to-b from-white to-brand-light relative overflow-hidden">
-      <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-brand-green/5 rounded-full blur-3xl"></div>
-      <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-brand-purple/5 rounded-full blur-3xl"></div>
+    <section id="blog" className="py-16 sm:py-20 px-4 sm:px-6 bg-gradient-to-b from-white to-gray-50/30 relative overflow-hidden">
+      <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-gray-200/20 rounded-full mix-blend-multiply filter blur-[120px] opacity-20"></div>
+      <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-gray-300/15 rounded-full mix-blend-multiply filter blur-[120px] opacity-20"></div>
 
       <div ref={ref} className="max-w-7xl mx-auto relative z-10 reveal-on-scroll">
-        <div className="text-center mb-8">
-          <span className="text-brand-orange text-xs font-bold uppercase tracking-widest mb-3 block">
+        <div className="text-center mb-8 sm:mb-12">
+          <span className="text-brand-orange text-xs font-medium uppercase tracking-widest mb-4 block" style={{ fontFamily: "'FF Nort', sans-serif" }}>
             Insights & Updates
           </span>
-          <div className="inline-block mb-3">
-            <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-brand-orange via-brand-purple to-brand-green blur-lg opacity-30"></div>
-              <h2 className="relative text-3xl md:text-4xl font-semibold tracking-tighter bg-gradient-to-r from-brand-orange via-brand-purple to-brand-green bg-clip-text text-transparent">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-light tracking-tight text-gray-900 mb-4" style={{ fontFamily: "'FF Nort', sans-serif" }}>
                 Latest from Our Blog.
               </h2>
-            </div>
-          </div>
-          <p className="text-brand-gray text-base max-w-2xl mx-auto">
+          <p className="text-gray-600 text-base sm:text-lg max-w-2xl mx-auto font-light" style={{ fontFamily: "'FF Nort', sans-serif" }}>
             Stay updated with the latest trends, insights, and innovations in continuous flow chemistry.
           </p>
         </div>
@@ -129,9 +124,9 @@ export default function Blog() {
                 <Link
                   key={post._id}
                   to={`/blog/${post.slug}`}
-                  className="flex-none w-[320px] bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 group cursor-pointer"
+                  className="flex-none w-[280px] sm:w-[300px] md:w-[320px] lg:w-[360px] bg-white rounded-lg sm:rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 group cursor-pointer"
                 >
-                <div className="relative h-36 overflow-hidden">
+                <div className="relative h-32 sm:h-36 md:h-40 overflow-hidden">
                   <img
                     src={post.image.startsWith('http') ? post.image : `${import.meta.env.VITE_API_URL || 'http://localhost:3001'}${post.image}`}
                     alt={post.title}
@@ -141,30 +136,30 @@ export default function Blog() {
                       (e.target as HTMLImageElement).src = 'https://via.placeholder.com/320x144?text=Blog+Image';
                     }}
                   />
-                  <div className="absolute top-3 left-3">
-                    <span className="bg-brand-purple text-white text-[10px] font-semibold px-2 py-1 rounded-full">
+                  <div className="absolute top-2 sm:top-3 left-2 sm:left-3">
+                    <span className="bg-brand-purple text-white text-[9px] sm:text-[10px] font-semibold px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full">
                       {post.category}
                     </span>
                   </div>
                 </div>
 
-                <div className="p-4">
-                  <div className="flex items-center gap-2 text-xs text-brand-gray mb-2">
-                    <Calendar className="w-3 h-3" />
+                <div className="p-3 sm:p-4">
+                  <div className="flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-xs text-brand-gray mb-2">
+                    <Calendar className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
                     <span>{post.date}</span>
                   </div>
 
-                  <h3 className="text-base font-semibold text-brand-black mb-2 group-hover:text-brand-purple transition-colors line-clamp-2">
+                  <h3 className="text-sm sm:text-base font-medium text-gray-900 mb-2 group-hover:text-brand-purple transition-colors line-clamp-2" style={{ fontFamily: "'FF Nort', sans-serif" }}>
                     {post.title}
                   </h3>
 
-                  <p className="text-brand-gray text-xs mb-3 line-clamp-2 leading-relaxed">
+                  <p className="text-gray-600 text-[11px] sm:text-xs mb-3 line-clamp-2 leading-relaxed font-light" style={{ fontFamily: "'FF Nort', sans-serif" }}>
                     {post.excerpt}
                   </p>
 
-                  <div className="flex items-center gap-2 text-brand-purple font-medium text-xs group-hover:gap-3 transition-all">
+                  <div className="flex items-center gap-1.5 sm:gap-2 text-brand-purple font-medium text-[10px] sm:text-xs group-hover:gap-2 sm:group-hover:gap-3 transition-all" style={{ fontFamily: "'FF Nort', sans-serif" }}>
                     <span>Read Article</span>
-                    <ArrowRight className="w-3 h-3" />
+                    <ArrowRight className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
                   </div>
                 </div>
               </Link>

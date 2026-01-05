@@ -174,6 +174,13 @@ export default function CalculatorWizard() {
     const nextIndex = currentStepIndex + 1;
     if (nextIndex < steps.length) {
       setCurrentStep(steps[nextIndex].id);
+      // Scroll to top of calculator section
+      setTimeout(() => {
+        const element = document.querySelector('#calculator');
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
     }
   };
 
@@ -181,19 +188,34 @@ export default function CalculatorWizard() {
     const prevIndex = currentStepIndex - 1;
     if (prevIndex >= 0) {
       setCurrentStep(steps[prevIndex].id);
+      // Scroll to top of calculator section
+      setTimeout(() => {
+        const element = document.querySelector('#calculator');
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
     }
   };
 
   const handleDownload = async () => {
     if (!downloadName || !downloadEmail) {
+      alert('Please enter both name and email to get the report');
+      return;
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(downloadEmail)) {
+      alert('Please enter a valid email address');
       return;
     }
 
     setSendingEmail(true);
     try {
       await downloadROIReport({
-        name: downloadName,
-        email: downloadEmail,
+        name: downloadName.trim(),
+        email: downloadEmail.trim(),
         reportData: {
           currency,
           currencySymbol: CURRENCY_SYMBOLS[currency],
@@ -219,34 +241,36 @@ export default function CalculatorWizard() {
       });
       setEmailSent(true);
     } catch (error) {
-      alert(error instanceof Error ? error.message : 'Failed to send email');
+      const errorMessage = error instanceof Error ? error.message : 'Failed to send email';
+      console.error('Download error:', error);
+      alert(errorMessage);
     } finally {
       setSendingEmail(false);
     }
   };
 
   return (
-    <section id="calculator" className="py-32 px-6 bg-gradient-to-b from-brand-black via-gray-900 to-brand-black overflow-hidden relative">
+    <section id="calculator" className="py-12 sm:py-16 md:py-20 px-4 sm:px-6 bg-gradient-to-b from-brand-black via-gray-900 to-brand-black overflow-hidden relative">
       <div ref={ref} className="w-full mx-auto relative z-10 reveal-on-scroll">
-        <div className="text-center mb-12">
-          <span className="text-brand-orange text-xs font-bold uppercase tracking-widest mb-4 block">FaaS ROI Calculator</span>
-          <h2 className="text-4xl md:text-5xl font-semibold tracking-tighter mb-4 text-white">
+        <div className="text-center mb-8 sm:mb-12">
+          <span className="text-brand-orange text-xs font-bold uppercase tracking-widest mb-3 sm:mb-4 block">FaaS ROI Calculator</span>
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tighter mb-3 sm:mb-4 text-white px-2">
             Calculate Your Investment Return.
           </h2>
-          <p className="text-gray-300 text-lg">Step-by-step analysis with comprehensive visualizations.</p>
+          <p className="text-gray-300 text-sm sm:text-base md:text-lg px-2">Step-by-step analysis with comprehensive visualizations.</p>
         </div>
 
-        <div className="mb-8 flex justify-between items-center max-w-4xl mx-auto">
+        <div className="mb-6 sm:mb-8 flex flex-col sm:flex-row justify-between items-center gap-3 sm:gap-0 max-w-4xl mx-auto px-2">
           {steps.map((step, index) => {
             const Icon = step.icon;
             const isActive = step.id === currentStep;
             const isCompleted = index < currentStepIndex;
 
             return (
-              <div key={step.id} className="flex items-center flex-1">
+              <div key={step.id} className="flex items-center flex-1 w-full sm:w-auto">
                 <button
                   onClick={() => setCurrentStep(step.id)}
-                  className={`flex items-center gap-2 transition-all ${
+                  className={`flex flex-col sm:flex-row items-center gap-2 transition-all w-full sm:w-auto ${
                     isActive
                       ? 'text-brand-orange'
                       : isCompleted
@@ -254,19 +278,19 @@ export default function CalculatorWizard() {
                       : 'text-gray-400 hover:text-brand-orange'
                   }`}
                 >
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${
+                  <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center transition-all flex-shrink-0 ${
                     isActive
                       ? 'bg-gradient-purple text-white shadow-lg shadow-brand-purple/50'
                       : isCompleted
                       ? 'bg-brand-green text-white'
                       : 'bg-gray-800 text-gray-400 border-2 border-gray-700'
                   }`}>
-                    <Icon className="w-5 h-5" />
+                    <Icon className="w-5 h-5 sm:w-6 sm:h-6" />
                   </div>
-                  <span className="text-sm font-medium hidden md:block text-white">{step.label}</span>
+                  <span className="text-xs sm:text-sm font-medium text-white text-center sm:text-left">{step.label}</span>
                 </button>
                 {index < steps.length - 1 && (
-                  <div className={`flex-1 h-1 mx-2 transition-all rounded-full ${
+                  <div className={`hidden sm:block flex-1 h-1 mx-2 transition-all rounded-full ${
                     isCompleted ? 'bg-gradient-to-r from-brand-green to-brand-purple' : 'bg-gray-800'
                   }`}></div>
                 )}
@@ -275,25 +299,25 @@ export default function CalculatorWizard() {
           })}
         </div>
 
-        <div className="w-full">
-          <div className="bg-gray-900 rounded-3xl shadow-2xl border border-gray-800 p-8 md:p-12 mb-8 min-h-[500px]">
+        <div className="w-full px-2 sm:px-0">
+          <div className="bg-gray-900 rounded-2xl sm:rounded-3xl shadow-2xl border border-gray-800 p-4 sm:p-6 md:p-8 lg:p-12 mb-6 sm:mb-8 min-h-[400px] sm:min-h-[500px]">
             {currentStep === 'basics' && (
-              <div className="space-y-8">
+              <div className="space-y-6 sm:space-y-8">
                 <div>
-                  <h3 className="text-2xl font-semibold text-white mb-2">Basic Information</h3>
-                  <p className="text-gray-300">Let's start with your production requirements.</p>
+                  <h3 className="text-xl sm:text-2xl font-semibold text-white mb-2">Basic Information</h3>
+                  <p className="text-gray-300 text-sm sm:text-base">Let's start with your production requirements.</p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                   <div>
-                    <label className="block text-sm font-semibold uppercase tracking-widest mb-3 text-gray-300">
+                    <label className="block text-xs sm:text-sm font-semibold uppercase tracking-widest mb-2 sm:mb-3 text-gray-300">
                       Currency
                     </label>
                     <div className="relative">
                       <select
                         value={currency}
                         onChange={(e) => setCurrency(e.target.value as Currency)}
-                        className="w-full bg-gray-800 border-2 border-gray-700 rounded-xl px-4 py-3.5 text-white focus:ring-2 focus:ring-brand-orange focus:border-brand-orange outline-none transition-all appearance-none cursor-pointer hover:border-brand-purple/50"
+                        className="w-full bg-gray-800 border-2 border-gray-700 rounded-lg sm:rounded-xl px-3 sm:px-4 py-2.5 sm:py-3.5 text-sm sm:text-base text-white focus:ring-2 focus:ring-brand-orange focus:border-brand-orange outline-none transition-all appearance-none cursor-pointer hover:border-brand-purple/50"
                         style={{
                           backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23e07742' d='M6 9L1 4h10z'/%3E%3C/svg%3E")`,
                           backgroundRepeat: 'no-repeat',
@@ -309,14 +333,14 @@ export default function CalculatorWizard() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold uppercase tracking-widest mb-3 text-gray-300">
+                    <label className="block text-xs sm:text-sm font-semibold uppercase tracking-widest mb-2 sm:mb-3 text-gray-300">
                       Number of Process Steps
                     </label>
                     <div className="relative">
                       <select
                         value={numSteps}
                         onChange={(e) => setNumSteps(parseInt(e.target.value))}
-                        className="w-full bg-gray-800 border-2 border-gray-700 rounded-xl px-4 py-3.5 text-white focus:ring-2 focus:ring-brand-orange focus:border-brand-orange outline-none transition-all appearance-none cursor-pointer hover:border-brand-purple/50"
+                        className="w-full bg-gray-800 border-2 border-gray-700 rounded-lg sm:rounded-xl px-3 sm:px-4 py-2.5 sm:py-3.5 text-sm sm:text-base text-white focus:ring-2 focus:ring-brand-orange focus:border-brand-orange outline-none transition-all appearance-none cursor-pointer hover:border-brand-purple/50"
                         style={{
                           backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23e07742' d='M6 9L1 4h10z'/%3E%3C/svg%3E")`,
                           backgroundRepeat: 'no-repeat',
@@ -331,12 +355,12 @@ export default function CalculatorWizard() {
                 </div>
 
                 <div>
-                  <div className="flex justify-between items-center mb-3">
-                    <label className="text-sm font-semibold uppercase tracking-widest text-gray-300">
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-0 mb-3">
+                    <label className="text-xs sm:text-sm font-semibold uppercase tracking-widest text-gray-300">
                       Monthly Production Volume
                     </label>
-                    <span className="text-2xl font-bold text-brand-orange">
-                      {volumeTonsPerMonth} <span className="text-base text-gray-400">tons</span>
+                    <span className="text-xl sm:text-2xl font-bold text-brand-orange">
+                      {volumeTonsPerMonth} <span className="text-sm sm:text-base text-gray-400">tons</span>
                     </span>
                   </div>
                   <input
@@ -346,7 +370,7 @@ export default function CalculatorWizard() {
                     step="1"
                     value={volumeTonsPerMonth}
                     onChange={(e) => setVolumeTonsPerMonth(parseFloat(e.target.value))}
-                    className="w-full accent-brand-orange h-3 rounded-lg appearance-none bg-gradient-to-r from-gray-700 to-brand-orange/30"
+                    className="w-full accent-brand-orange h-2 sm:h-3 rounded-lg appearance-none bg-gradient-to-r from-gray-700 to-brand-orange/30"
                   />
                   <div className="flex justify-between text-xs text-gray-400 mt-2">
                     <span>1 ton</span>
@@ -355,15 +379,15 @@ export default function CalculatorWizard() {
                   </div>
                 </div>
 
-                <div className="bg-gradient-to-r from-gray-800 to-gray-800/50 rounded-xl p-6 border-l-4 border-brand-orange shadow-lg">
+                <div className="bg-gradient-to-r from-gray-800 to-gray-800/50 rounded-lg sm:rounded-xl p-4 sm:p-6 border-l-4 border-brand-orange shadow-lg">
                   <div className="flex items-start gap-3">
-                    <Calendar className="w-5 h-5 text-brand-orange mt-1" />
+                    <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-brand-orange mt-1 flex-shrink-0" />
                     <div>
-                      <div className="font-semibold text-white mb-1">Annual Production</div>
-                      <div className="text-2xl font-bold text-brand-orange">
+                      <div className="font-semibold text-white mb-1 text-sm sm:text-base">Annual Production</div>
+                      <div className="text-xl sm:text-2xl font-bold text-brand-orange">
                         {volumeTonsPerMonth * 12} tons/year
                       </div>
-                      <div className="text-sm text-gray-400 mt-1">
+                      <div className="text-xs sm:text-sm text-gray-400 mt-1">
                         Based on {volumeTonsPerMonth} tons per month
                       </div>
                     </div>
@@ -373,19 +397,19 @@ export default function CalculatorWizard() {
             )}
 
             {currentStep === 'reactions' && (
-              <div className="space-y-8">
+              <div className="space-y-6 sm:space-y-8">
                 <div>
-                  <h3 className="text-2xl font-semibold text-white mb-2">Process Configuration</h3>
-                  <p className="text-gray-300">Select the reaction type for each step of your process.</p>
+                  <h3 className="text-xl sm:text-2xl font-semibold text-white mb-2">Process Configuration</h3>
+                  <p className="text-gray-300 text-sm sm:text-base">Select the reaction type for each step of your process.</p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                   {[1, 2, 3, 4].map((step) => (
                     <div
                       key={step}
                       className={`transition-all ${step > numSteps ? 'opacity-30' : ''}`}
                     >
-                      <label className="block text-sm font-semibold uppercase tracking-widest mb-3 text-gray-300">
+                      <label className="block text-xs sm:text-sm font-semibold uppercase tracking-widest mb-2 sm:mb-3 text-gray-300">
                         Step {step} Reaction Type
                       </label>
                       <div className="relative">
@@ -393,7 +417,7 @@ export default function CalculatorWizard() {
                           value={reactions[step - 1]}
                           onChange={(e) => handleReactionChange(step - 1, e.target.value as ReactionType)}
                           disabled={step > numSteps}
-                          className="w-full bg-gray-800 border-2 border-gray-700 rounded-xl px-4 py-3.5 text-white focus:ring-2 focus:ring-brand-orange focus:border-brand-orange outline-none disabled:cursor-not-allowed disabled:opacity-50 transition-all appearance-none cursor-pointer hover:border-brand-purple/50"
+                          className="w-full bg-gray-800 border-2 border-gray-700 rounded-lg sm:rounded-xl px-3 sm:px-4 py-2.5 sm:py-3.5 text-sm sm:text-base text-white focus:ring-2 focus:ring-brand-orange focus:border-brand-orange outline-none disabled:cursor-not-allowed disabled:opacity-50 transition-all appearance-none cursor-pointer hover:border-brand-purple/50"
                           style={{
                             backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23e07742' d='M6 9L1 4h10z'/%3E%3C/svg%3E")`,
                             backgroundRepeat: 'no-repeat',
@@ -437,18 +461,18 @@ export default function CalculatorWizard() {
             )}
 
             {currentStep === 'economics' && (
-              <div className="space-y-8">
+              <div className="space-y-6 sm:space-y-8">
                 <div>
-                  <h3 className="text-2xl font-semibold text-white mb-2">Economic Parameters</h3>
-                  <p className="text-gray-300">Configure your cost structure and fee parameters.</p>
+                  <h3 className="text-xl sm:text-2xl font-semibold text-white mb-2">Economic Parameters</h3>
+                  <p className="text-gray-300 text-sm sm:text-base">Configure your cost structure and fee parameters.</p>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold uppercase tracking-widest mb-3 text-gray-300">
+                  <label className="block text-xs sm:text-sm font-semibold uppercase tracking-widest mb-2 sm:mb-3 text-gray-300">
                     Current Batch KSM Cost per Kg
                   </label>
                   <div className="relative">
-                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-semibold">
+                    <span className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 text-gray-400 font-semibold text-sm sm:text-base">
                       {CURRENCY_SYMBOLS[currency]}
                     </span>
                     <input
@@ -466,7 +490,7 @@ export default function CalculatorWizard() {
                         setKsmCostError(ksmCostINR > 0 && valueStr.length > 0 && valueStr.length < 4);
                       }}
                       placeholder="Enter your current cost (min 4 digits)"
-                      className={`w-full bg-gray-800 border-2 rounded-xl pl-10 pr-4 py-4 text-white text-lg placeholder-gray-500 focus:ring-2 outline-none transition-all ${
+                      className={`w-full bg-gray-800 border-2 rounded-lg sm:rounded-xl pl-8 sm:pl-10 pr-3 sm:pr-4 py-3 sm:py-4 text-white text-sm sm:text-base md:text-lg placeholder-gray-500 focus:ring-2 outline-none transition-all ${
                         ksmCostError 
                           ? 'border-red-500 focus:border-red-500 focus:ring-red-500' 
                           : 'border-gray-700 focus:ring-brand-orange focus:border-brand-orange'
@@ -474,7 +498,7 @@ export default function CalculatorWizard() {
                     />
                   </div>
                   {ksmCostError && (
-                    <p className="mt-2 text-sm text-red-400 flex items-center gap-1">
+                    <p className="mt-2 text-xs sm:text-sm text-red-400 flex items-center gap-1">
                       <span>⚠</span>
                       <span>Please enter a minimum of 4 digits</span>
                     </p>
@@ -482,27 +506,27 @@ export default function CalculatorWizard() {
                 </div>
 
                 {ksmCostINR > 0 && (
-                  <div className="bg-gradient-to-r from-gray-800 to-gray-800/50 rounded-xl p-6 border-l-4 border-brand-green shadow-lg">
-                    <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
+                  <div className="bg-gradient-to-r from-gray-800 to-gray-800/50 rounded-lg sm:rounded-xl p-4 sm:p-6 border-l-4 border-brand-green shadow-lg">
+                    <div className="grid grid-cols-1 gap-4 sm:gap-6">
                       <div>
-                        <div className="text-sm font-semibold uppercase tracking-widest text-gray-300 mb-2">
+                        <div className="text-xs sm:text-sm font-semibold uppercase tracking-widest text-gray-300 mb-2">
                           Savings Per Kg
                         </div>
-                        <div className="text-3xl font-bold text-brand-green">
+                        <div className="text-2xl sm:text-3xl font-bold text-brand-green">
                           {formatMoneyWithApprox(savingsRmPerKgINR)}
                         </div>
-                        <div className="text-sm text-gray-400 mt-1">Per kilogram savings</div>
+                        <div className="text-xs sm:text-sm text-gray-400 mt-1">Per kilogram savings</div>
                       </div>
                     </div>
                   </div>
                 )}
 
                 <div>
-                  <div className="flex justify-between items-center mb-3">
-                    <label className="text-sm font-semibold uppercase tracking-widest text-gray-300">
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-0 mb-3">
+                    <label className="text-xs sm:text-sm font-semibold uppercase tracking-widest text-gray-300">
                       FaaS Fee Percentage
                     </label>
-                    <span className="text-2xl font-bold text-brand-orange">{faasPercent}%</span>
+                    <span className="text-xl sm:text-2xl font-bold text-brand-orange">{faasPercent}%</span>
                   </div>
                   <input
                     type="range"
@@ -511,7 +535,7 @@ export default function CalculatorWizard() {
                     step="1"
                     value={faasPercent}
                     onChange={(e) => setFaasPercent(parseInt(e.target.value))}
-                    className="w-full accent-brand-orange h-3 rounded-lg"
+                    className="w-full accent-brand-orange h-2 sm:h-3 rounded-lg"
                   />
                   <div className="flex justify-between text-xs text-gray-400 mt-2">
                     <span>40%</span>
@@ -521,12 +545,12 @@ export default function CalculatorWizard() {
                 </div>
 
                 {faasPerKgINR > 0 && (
-                  <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
-                    <div className="bg-gray-800 rounded-xl p-4 border border-gray-700">
+                  <div className="grid grid-cols-1 gap-4">
+                    <div className="bg-gray-800 rounded-lg sm:rounded-xl p-4 border border-gray-700">
                       <div className="text-xs font-semibold uppercase tracking-widest text-gray-300 mb-2">
                         FaaS Fee Per Kg
                       </div>
-                      <div className="text-xl font-bold text-brand-orange">
+                      <div className="text-lg sm:text-xl font-bold text-brand-orange">
                         {formatMoneyWithApprox(faasPerKgINR)}
                       </div>
                     </div>
@@ -536,54 +560,51 @@ export default function CalculatorWizard() {
             )}
 
             {currentStep === 'results' && (
-              <div className="space-y-8">
+              <div className="space-y-6 sm:space-y-8">
                 <div>
-                  <h3 className="text-2xl font-semibold text-white mb-2">Your ROI Analysis</h3>
-                  <p className="text-gray-300">Comprehensive breakdown of your investment return.</p>
+                  <h3 className="text-xl sm:text-2xl font-semibold text-white mb-2">Your ROI Analysis</h3>
+                  <p className="text-gray-300 text-sm sm:text-base">Comprehensive breakdown of your investment return.</p>
                 </div>
 
-                <ROIDashboard
-                  roiMonths={roiMonths}
-                  savingsAfterFaasINR={savingsAfterFaasINR}
-                  totalCostClientINR={totalCostClientINR}
-                  formatMoney={formatMoney}
-                />
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+                  <ROIDashboard
+                    roiMonths={roiMonths}
+                    savingsAfterFaasINR={savingsAfterFaasINR}
+                    totalCostClientINR={totalCostClientINR}
+                    formatMoney={formatMoney}
+                  />
 
-                <ROICharts
-                  currency={currency}
-                  currencySymbol={CURRENCY_SYMBOLS[currency]}
-                  ksmCostINR={ksmCostINR}
-                  flowneticsKsmINR={flowneticsKsmINR}
-                  partA_INR={partA_INR}
-                  partBC_INR={partBC_INR}
-                  interestRefundableINR={interestRefundableINR}
-                  savingsRmPerAnnumINR={savingsRmPerAnnumINR}
-                  flowneticsFeesPerYearINR={flowneticsFeesPerYearINR}
-                  savingsAfterFaasINR={savingsAfterFaasINR}
-                  roiMonths={roiMonths}
-                  formatMoneyShort={formatMoneyShort}
-                />
+                  <ROICharts
+                    currencySymbol={CURRENCY_SYMBOLS[currency]}
+                    partA_INR={partA_INR}
+                    partBC_INR={partBC_INR}
+                    interestRefundableINR={interestRefundableINR}
+                    savingsRmPerAnnumINR={savingsRmPerAnnumINR}
+                    flowneticsFeesPerYearINR={flowneticsFeesPerYearINR}
+                    formatMoneyShort={formatMoneyShort}
+                  />
+                </div>
 
-                <div className="flex gap-4">
+                <div className="flex gap-3 sm:gap-4">
                   <button
                     onClick={() => setShowDownloadModal(true)}
-                    className="flex-1 bg-gradient-purple text-white px-6 py-4 rounded-2xl font-medium hover:opacity-90 transition-all flex items-center justify-center gap-2 shadow-lg shadow-brand-purple/30"
+                    className="flex-1 bg-gradient-purple text-white px-4 sm:px-6 py-3 sm:py-4 rounded-xl sm:rounded-2xl text-sm sm:text-base font-medium hover:opacity-90 transition-all flex items-center justify-center gap-2 shadow-lg shadow-brand-purple/30"
                   >
-                    <Download className="w-5 h-5" />
-                    <span>Download Report</span>
+                    <Download className="w-4 h-4 sm:w-5 sm:h-5" />
+                    <span>Get Report</span>
                   </button>
                 </div>
               </div>
             )}
           </div>
 
-          <div className="flex justify-between items-center">
+          <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 sm:gap-0">
             <button
               onClick={prevStep}
               disabled={currentStepIndex === 0}
-              className="flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-all disabled:opacity-30 disabled:cursor-not-allowed text-gray-400 hover:text-brand-orange"
+              className="flex items-center justify-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg sm:rounded-xl text-sm sm:text-base font-medium transition-all disabled:opacity-30 disabled:cursor-not-allowed text-gray-400 hover:text-brand-orange"
             >
-              <ChevronLeft className="w-5 h-5" />
+              <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
               <span>Previous</span>
             </button>
 
@@ -591,10 +612,10 @@ export default function CalculatorWizard() {
               <button
                 onClick={nextStep}
                 disabled={!canProceed()}
-                className="flex items-center gap-2 px-8 py-4 rounded-2xl font-medium transition-all bg-gradient-purple text-white hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-brand-purple/30"
+                className="flex items-center justify-center gap-2 px-6 sm:px-8 py-3 sm:py-4 rounded-xl sm:rounded-2xl text-sm sm:text-base font-medium transition-all bg-gradient-purple text-white hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-brand-purple/30"
               >
                 <span>Continue</span>
-                <ChevronRight className="w-5 h-5" />
+                <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
             ) : (
               <button
@@ -605,7 +626,7 @@ export default function CalculatorWizard() {
                     element.scrollIntoView({ behavior: 'smooth', block: 'start' });
                   }
                 }}
-                className="flex items-center gap-2 px-8 py-4 rounded-2xl font-medium transition-all bg-gradient-purple text-white hover:opacity-90 shadow-lg shadow-brand-purple/30"
+                className="flex items-center justify-center gap-2 px-6 sm:px-8 py-3 sm:py-4 rounded-xl sm:rounded-2xl text-sm sm:text-base font-medium transition-all bg-gradient-purple text-white hover:opacity-90 shadow-lg shadow-brand-purple/30"
               >
                 <span>Start Over</span>
               </button>
@@ -616,8 +637,8 @@ export default function CalculatorWizard() {
 
       {/* Download Modal */}
       {showDownloadModal && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-6">
-          <div className="bg-gray-900 border border-gray-800 rounded-2xl p-8 w-full max-w-md shadow-2xl">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 sm:p-6">
+          <div className="bg-gray-900 border border-gray-800 rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 w-full max-w-md shadow-2xl max-h-[90vh] overflow-y-auto">
             {emailSent ? (
               <div className="text-center">
                 <CheckCircle className="w-16 h-16 text-brand-green mx-auto mb-4" />
@@ -639,7 +660,7 @@ export default function CalculatorWizard() {
               </div>
             ) : (
               <>
-                <h3 className="text-2xl font-bold text-white mb-2">Download ROI Report</h3>
+                <h3 className="text-2xl font-bold text-white mb-2">Get Your ROI Report</h3>
                 <p className="text-gray-300 mb-6">
                   Enter your details to receive the report via email.
                 </p>
@@ -683,7 +704,7 @@ export default function CalculatorWizard() {
                       disabled={sendingEmail}
                       className="flex-1 bg-gradient-purple text-white px-6 py-3 rounded-xl hover:opacity-90 transition-all disabled:opacity-50"
                     >
-                      {sendingEmail ? 'Sending...' : 'Send Report'}
+                      {sendingEmail ? 'Getting...' : 'Get Report'}
                     </button>
                   </div>
                 </form>

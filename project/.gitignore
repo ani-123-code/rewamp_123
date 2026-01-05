@@ -41,3 +41,8 @@ Thumbs.db
 *.tmp
 *.temp
 .cache
+
+# Large media files (use CDN or external storage)
+public/media/*.mp4
+public/media/*.mov
+public/media/*.avi

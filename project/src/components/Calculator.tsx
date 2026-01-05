@@ -361,7 +361,7 @@ export default function Calculator() {
               className="mt-6 w-full bg-gradient-to-r from-brand-purple to-brand-green text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg transition-all flex items-center justify-center gap-2"
             >
               <Download className="w-5 h-5" />
-              <span>Download Report</span>
+              <span>Get Report</span>
             </button>
           </div>
         </div>

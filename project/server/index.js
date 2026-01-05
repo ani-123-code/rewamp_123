@@ -160,17 +160,32 @@ async function sendEmailViaGmail(to, subject, html) {
 
 // Helper function to generate enhanced email template HTML
 function generateEmailTemplate(name, reportData) {
-  const roiYears = reportData.roiMonths / 12;
-  const roiPercentage = reportData.totalCostClientINR > 0
-    ? ((reportData.savingsAfterFaasINR / reportData.totalCostClientINR) * 100).toFixed(1)
+  // Safely handle missing or undefined values
+  const roiMonths = reportData.roiMonths || 0;
+  const roiYears = roiMonths / 12;
+  const totalCost = reportData.totalCostClientINR || 0;
+  const savings = reportData.savingsAfterFaasINR || 0;
+  const roiPercentage = totalCost > 0
+    ? ((savings / totalCost) * 100).toFixed(1)
     : '0';
 
   const formatMoney = (amount) => {
-    if (!amount || amount === 0) return '0';
+    if (!amount || amount === 0 || isNaN(amount)) return '0';
     const rate = reportData.currency === 'USD' ? 0.012 : reportData.currency === 'EUR' ? 0.011 : 1;
     const converted = amount * rate;
-    const symbol = reportData.currencySymbol;
+    const symbol = reportData.currencySymbol || '₹';
     return `${symbol} ${converted.toLocaleString('en-US', { maximumFractionDigits: 0 })} (approx)`;
+  };
+
+  // Helper to safely format numbers
+  const formatNumber = (value, decimals = 1) => {
+    if (value === null || value === undefined || isNaN(value)) return '0';
+    return Number(value).toFixed(decimals);
+  };
+
+  // Helper to safely get string values
+  const safeString = (value, defaultValue = 'N/A') => {
+    return value !== null && value !== undefined ? String(value) : defaultValue;
   };
 
   return `
@@ -208,10 +223,10 @@ function generateEmailTemplate(name, reportData) {
                 <td style="padding: 0 30px 30px 30px;">
                   <div style="background: linear-gradient(135deg, #702594 0%, #057210 100%); border-radius: 12px; padding: 30px; text-align: center; color: #ffffff;">
                     <h2 style="margin: 0 0 10px 0; font-size: 18px; font-weight: 600; opacity: 0.9;">Investment Return Summary</h2>
-                    <div style="font-size: 48px; font-weight: 700; margin: 15px 0; letter-spacing: -1px;">${reportData.roiMonths.toFixed(1)}</div>
+                    <div style="font-size: 48px; font-weight: 700; margin: 15px 0; letter-spacing: -1px;">${formatNumber(roiMonths)}</div>
                     <div style="font-size: 20px; font-weight: 500; margin-bottom: 10px;">Months to Breakeven</div>
                     <div style="font-size: 14px; opacity: 0.9; margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255, 255, 255, 0.2);">
-                      <div style="margin-bottom: 5px;">${roiYears.toFixed(1)} Years • ${roiPercentage}% Annual ROI</div>
+                      <div style="margin-bottom: 5px;">${formatNumber(roiYears)} Years • ${roiPercentage}% Annual ROI</div>
                     </div>
                   </div>
                 </td>
@@ -224,15 +239,15 @@ function generateEmailTemplate(name, reportData) {
                   <table role="presentation" style="width: 100%; border-collapse: collapse;">
                     <tr style="background-color: #f5f5f7;">
                       <td style="padding: 15px; border-bottom: 1px solid #e5e7eb; color: #050505; font-weight: 600; font-size: 14px;">Annual Production Volume</td>
-                      <td style="padding: 15px; border-bottom: 1px solid #e5e7eb; text-align: right; color: #86868b; font-size: 14px;">${reportData.annualQtyTons} tons</td>
+                      <td style="padding: 15px; border-bottom: 1px solid #e5e7eb; text-align: right; color: #86868b; font-size: 14px;">${safeString(reportData.annualQtyTons, '0')} tons</td>
                     </tr>
                     <tr>
                       <td style="padding: 15px; border-bottom: 1px solid #e5e7eb; color: #050505; font-weight: 600; font-size: 14px;">Total Investment Required</td>
-                      <td style="padding: 15px; border-bottom: 1px solid #e5e7eb; text-align: right; color: #86868b; font-size: 14px;">${formatMoney(reportData.totalCostClientINR)}</td>
+                      <td style="padding: 15px; border-bottom: 1px solid #e5e7eb; text-align: right; color: #86868b; font-size: 14px;">${formatMoney(totalCost)}</td>
                     </tr>
                     <tr style="background-color: #f5f5f7;">
                       <td style="padding: 15px; border-bottom: 1px solid #e5e7eb; color: #050505; font-weight: 600; font-size: 14px;">Annual Cost Savings</td>
-                      <td style="padding: 15px; border-bottom: 1px solid #e5e7eb; text-align: right; color: #057210; font-weight: 600; font-size: 14px;">${formatMoney(reportData.savingsAfterFaasINR)}</td>
+                      <td style="padding: 15px; border-bottom: 1px solid #e5e7eb; text-align: right; color: #057210; font-weight: 600; font-size: 14px;">${formatMoney(savings)}</td>
                     </tr>
                     <tr>
                       <td style="padding: 15px; border-bottom: 1px solid #e5e7eb; color: #050505; font-weight: 600; font-size: 14px;">Cost per Kg Reduction</td>
@@ -240,11 +255,11 @@ function generateEmailTemplate(name, reportData) {
                     </tr>
                     <tr style="background-color: #f5f5f7;">
                       <td style="padding: 15px; border-bottom: 1px solid #e5e7eb; color: #050505; font-weight: 600; font-size: 14px;">Number of Process Steps</td>
-                      <td style="padding: 15px; border-bottom: 1px solid #e5e7eb; text-align: right; color: #86868b; font-size: 14px;">${reportData.numSteps}</td>
+                      <td style="padding: 15px; border-bottom: 1px solid #e5e7eb; text-align: right; color: #86868b; font-size: 14px;">${safeString(reportData.numSteps, '0')}</td>
                     </tr>
                     <tr>
                       <td style="padding: 15px; color: #050505; font-weight: 600; font-size: 14px;">FaaS Fee Structure</td>
-                      <td style="padding: 15px; text-align: right; color: #86868b; font-size: 14px;">${reportData.faasPercent}% of savings</td>
+                      <td style="padding: 15px; text-align: right; color: #86868b; font-size: 14px;">${safeString(reportData.faasPercent, '0')}% of savings</td>
                     </tr>
                   </table>
                 </td>
@@ -394,40 +409,72 @@ app.post('/api/download-roi', async (req, res) => {
     const { name, email, reportData } = req.body;
     
     if (!name || !email || !reportData) {
-      return res.status(400).json({ error: 'Missing required fields' });
+      return res.status(400).json({ error: 'Missing required fields: name, email, and reportData are required' });
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({ error: 'Invalid email format' });
     }
 
     // Generate email template
     const emailHTML = generateEmailTemplate(name, reportData);
 
     // Send email via Gmail API
-    await sendEmailViaGmail(
-      email,
-      'Your Flownetics ROI Analysis Report',
-      emailHTML
-    );
+    try {
+      await sendEmailViaGmail(
+        email,
+        'Your Flownetics ROI Analysis Report',
+        emailHTML
+      );
+    } catch (emailError) {
+      console.error('Email sending error:', emailError);
+      // Still save the record even if email fails
+      // But return error to user
+      throw new Error(`Failed to send email: ${emailError.message}`);
+    }
 
     // Save download record to MongoDB
-    const downloadRecord = {
-      name,
-      email,
-      reportData: {
-        currency: reportData.currency,
-        volumeTonsPerMonth: reportData.volumeTonsPerMonth,
-        numSteps: reportData.numSteps,
-        roiMonths: reportData.roiMonths,
-        totalCostClientINR: reportData.totalCostClientINR,
-        savingsAfterFaasINR: reportData.savingsAfterFaasINR,
-      },
-      downloadedAt: new Date(),
-    };
+    try {
+      const downloadRecord = {
+        name,
+        email,
+        reportData: {
+          currency: reportData.currency || 'INR',
+          volumeTonsPerMonth: reportData.volumeTonsPerMonth || 0,
+          annualQtyTons: reportData.annualQtyTons || (reportData.volumeTonsPerMonth ? reportData.volumeTonsPerMonth * 12 : 0),
+          numSteps: reportData.numSteps || 0,
+          reactions: reportData.reactions || [],
+          roiMonths: reportData.roiMonths || 0,
+          totalCostClientINR: reportData.totalCostClientINR || 0,
+          savingsAfterFaasINR: reportData.savingsAfterFaasINR || 0,
+          ksmCostINR: reportData.ksmCostINR || 0,
+          flowneticsKsmINR: reportData.flowneticsKsmINR || 0,
+          savingsRmPerKgINR: reportData.savingsRmPerKgINR || 0,
+          faasPerKgINR: reportData.faasPerKgINR || 0,
+          savingsRmPerAnnumINR: reportData.savingsRmPerAnnumINR || 0,
+          flowneticsFeesPerYearINR: reportData.flowneticsFeesPerYearINR || 0,
+          partA_INR: reportData.partA_INR || 0,
+          partBC_INR: reportData.partBC_INR || 0,
+          refundableINR: reportData.refundableINR || 0,
+          interestRefundableINR: reportData.interestRefundableINR || 0,
+          faasPercent: reportData.faasPercent || 50,
+        },
+        downloadedAt: new Date(),
+      };
 
-    await db.collection('roi_downloads').insertOne(downloadRecord);
+      await db.collection('roi_downloads').insertOne(downloadRecord);
+    } catch (dbError) {
+      console.error('Database error (non-critical):', dbError);
+      // Don't fail the request if DB save fails, email was sent
+    }
 
     res.json({ success: true, message: 'Email sent successfully' });
   } catch (error) {
     console.error('Download ROI error:', error);
-    res.status(500).json({ error: 'Failed to send email: ' + error.message });
+    const errorMessage = error.message || 'Failed to send email';
+    res.status(500).json({ error: errorMessage });
   }
 });
 
