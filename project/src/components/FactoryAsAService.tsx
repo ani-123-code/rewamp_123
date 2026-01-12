@@ -85,7 +85,7 @@ export default function FactoryAsAService() {
         </div>
 
         {/* Phase Cards */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8 md:gap-10 mb-12 sm:mb-16">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 mb-12 sm:mb-16">
           {phases.map((phase, index) => (
             <PhaseCard key={index} phase={phase} index={index} />
           ))}
@@ -122,55 +122,48 @@ function PhaseCard({ phase, index }: { phase: Phase; index: number }) {
   return (
     <div
       ref={cardRef}
-      className="bg-white rounded-xl sm:rounded-2xl p-6 sm:p-8 md:p-10 border-2 border-gray-200 hover:shadow-2xl transition-all duration-300 group relative overflow-hidden reveal-on-scroll"
+      className="bg-gradient-to-br from-white via-brand-light to-white rounded-xl sm:rounded-2xl p-4 sm:p-5 border-2 transition-all duration-500 hover:shadow-xl hover:-translate-y-1 group relative overflow-hidden reveal-on-scroll flex flex-col"
       style={{
         transitionDelay: delay,
-        borderColor: 'rgb(229, 231, 235)'
-      }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.borderColor = phase.color;
-        e.currentTarget.style.transform = 'translateY(-4px)';
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.borderColor = 'rgb(229, 231, 235)';
-        e.currentTarget.style.transform = 'translateY(0)';
+        borderColor: phase.color,
+        maxHeight: '400px'
       }}
     >
       {/* Decorative gradient overlay */}
       <div 
-        className="absolute top-0 right-0 w-32 h-32 rounded-full blur-2xl opacity-10 group-hover:opacity-20 transition-opacity duration-500"
+        className="absolute top-0 right-0 w-20 h-20 rounded-full blur-2xl opacity-20 group-hover:opacity-30 transition-opacity duration-500"
         style={{ backgroundColor: phase.color }}
       ></div>
 
-      <div className="relative z-10">
+      <div className="relative z-10 flex flex-col flex-1">
         {/* Phase Number and Title */}
-        <div className="mb-4 sm:mb-6">
-          <span className={`${phase.labelColor} text-xs font-bold uppercase tracking-widest block mb-2`} style={{ fontFamily: "'FF Nort', sans-serif" }}>
+        <div className="mb-2">
+          <span className={`${phase.labelColor} text-xs font-bold uppercase tracking-widest block mb-1`} style={{ fontFamily: "'FF Nort', sans-serif" }}>
             {phase.number}
           </span>
-          <h3 className="text-lg sm:text-xl md:text-2xl font-medium text-gray-900 mb-3 sm:mb-4" style={{ fontFamily: "'FF Nort', sans-serif" }}>
+          <h3 className="text-base sm:text-lg font-medium text-gray-900 mb-1.5 group-hover:scale-[1.02] transition-transform duration-300 overflow-hidden" style={{ fontFamily: "'FF Nort', sans-serif", maxHeight: '3.5rem' }}>
             Phase {index + 1} – {phase.title}
           </h3>
         </div>
 
         {/* Description */}
-        <p className="text-gray-700 text-sm sm:text-base leading-relaxed font-light mb-6 sm:mb-8" style={{ fontFamily: "'FF Nort', sans-serif" }}>
+        <p className="text-gray-600 text-xs leading-relaxed font-light mb-3 flex-1 overflow-hidden" style={{ fontFamily: "'FF Nort', sans-serif", maxHeight: '4rem' }}>
           {phase.description}
         </p>
 
         {/* Ask Yourself Section */}
-        <div className="mb-4 sm:mb-6">
-          <h4 className="text-xs sm:text-sm font-semibold text-gray-800 uppercase tracking-wider mb-3 sm:mb-4" style={{ fontFamily: "'FF Nort', sans-serif" }}>
+        <div className="mb-3">
+          <h4 className="text-[10px] font-semibold text-gray-800 uppercase tracking-wider mb-2" style={{ fontFamily: "'FF Nort', sans-serif" }}>
             Ask yourself:
           </h4>
-          <ul className="space-y-2 sm:space-y-3">
+          <ul className="space-y-1.5">
             {phase.questions.map((question, qIndex) => (
-              <li key={qIndex} className="flex items-start gap-2.5">
+              <li key={qIndex} className="flex items-start gap-2">
                 <div 
-                  className="w-1.5 h-1.5 rounded-full mt-2 flex-shrink-0"
+                  className="w-1 h-1 rounded-full mt-1.5 flex-shrink-0"
                   style={{ backgroundColor: phase.color }}
                 ></div>
-                <span className="text-gray-700 text-sm sm:text-base leading-relaxed font-light" style={{ fontFamily: "'FF Nort', sans-serif" }}>
+                <span className="text-gray-600 text-xs leading-relaxed font-light" style={{ fontFamily: "'FF Nort', sans-serif" }}>
                   {question}
                 </span>
               </li>
@@ -179,8 +172,8 @@ function PhaseCard({ phase, index }: { phase: Phase; index: number }) {
         </div>
 
         {/* Call to Action */}
-        <div className="pt-4 border-t border-gray-200">
-          <p className="text-xs sm:text-sm text-gray-600 font-light italic" style={{ fontFamily: "'FF Nort', sans-serif" }}>
+        <div className="pt-2 border-t border-gray-200 mt-auto">
+          <p className="text-[10px] text-gray-600 font-light italic leading-tight" style={{ fontFamily: "'FF Nort', sans-serif" }}>
             {index === 0 && '→ Check your reaction\'s initial flow suitability with our screening tool.'}
             {index === 1 && '→ See if Flownetics can help intensify your process – start with a suitability check.'}
             {index === 2 && '→ Start by checking whether your chemistry is a good candidate for flow, then talk to us about FaaS.'}
