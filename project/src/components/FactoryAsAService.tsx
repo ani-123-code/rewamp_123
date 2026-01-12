@@ -1,5 +1,4 @@
 import { useScrollReveal } from '../hooks/useScrollReveal';
-import { ArrowRight } from 'lucide-react';
 
 interface Phase {
   number: string;
@@ -50,20 +49,6 @@ const phases: Phase[] = [
 export default function FactoryAsAService() {
   const ref = useScrollReveal<HTMLDivElement>();
 
-  const handleSuitabilityCheck = () => {
-    const element = document.querySelector('#ai-architect');
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
-
-  const handleROICalculator = () => {
-    const element = document.querySelector('#calculator');
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
-
   return (
     <section id="faas" className="py-16 sm:py-20 md:py-24 px-4 sm:px-6 bg-gradient-to-b from-gray-50/30 to-white relative overflow-hidden">
       {/* Background Elements */}
@@ -73,42 +58,22 @@ export default function FactoryAsAService() {
       <div ref={ref} className="max-w-7xl mx-auto relative z-10 reveal-on-scroll">
         {/* Header Section */}
         <div className="text-center mb-12 sm:mb-16 md:mb-20">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-light tracking-tight text-gray-900 mb-4 sm:mb-6" style={{ fontFamily: "'FF Nort', sans-serif" }}>
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-light tracking-tight text-gray-900 mb-3 sm:mb-4" style={{ fontFamily: "'FF Nort', sans-serif" }}>
             Factory as a Service (FaaS) by Flownetics
           </h2>
-          <p className="text-gray-700 text-base sm:text-lg md:text-xl leading-relaxed font-light max-w-4xl mx-auto mb-6 sm:mb-8" style={{ fontFamily: "'FF Nort', sans-serif" }}>
+          <p className="text-gray-700 text-sm sm:text-base md:text-lg leading-relaxed font-light max-w-4xl mx-auto mb-4 sm:mb-5" style={{ fontFamily: "'FF Nort', sans-serif" }}>
             Flownetics' Factory as a Service model lets you access custom flow manufacturing capacity without committing large Capex. We take a route from batch recipe → flow process → modular platform, and then run it as an Opex based service aligned to your volumes and timelines.
           </p>
-          <p className="text-gray-800 text-sm sm:text-base font-medium" style={{ fontFamily: "'FF Nort', sans-serif" }}>
+          <p className="text-gray-800 text-xs sm:text-sm font-medium" style={{ fontFamily: "'FF Nort', sans-serif" }}>
             Our work typically moves through three phases.
           </p>
         </div>
 
         {/* Phase Cards */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 mb-12 sm:mb-16">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
           {phases.map((phase, index) => (
             <PhaseCard key={index} phase={phase} index={index} />
           ))}
-        </div>
-
-        {/* Action Buttons */}
-        <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center">
-          <button
-            onClick={handleSuitabilityCheck}
-            className="bg-brand-black text-white px-6 sm:px-8 md:px-10 py-3 sm:py-4 rounded-xl sm:rounded-2xl text-sm sm:text-base font-medium hover:bg-gradient-purple transition-all shadow-lg hover:shadow-xl hover:-translate-y-1 flex items-center justify-center gap-2 group w-full sm:w-auto min-w-[240px]"
-            style={{ fontFamily: "'FF Nort', sans-serif" }}
-          >
-            <span>Flow Suitability Checker</span>
-            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform flex-shrink-0" />
-          </button>
-          <button
-            onClick={handleROICalculator}
-            className="bg-brand-black text-white px-6 sm:px-8 md:px-10 py-3 sm:py-4 rounded-xl sm:rounded-2xl text-sm sm:text-base font-medium hover:bg-gradient-purple transition-all shadow-lg hover:shadow-xl hover:-translate-y-1 flex items-center justify-center gap-2 group w-full sm:w-auto min-w-[240px]"
-            style={{ fontFamily: "'FF Nort', sans-serif" }}
-          >
-            <span>Calculate Your Investment Return</span>
-            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform flex-shrink-0" />
-          </button>
         </div>
       </div>
     </section>
