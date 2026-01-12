@@ -44,6 +44,16 @@ export default function PathToProductionDetail() {
   const isLastStep = currentIndex === steps.length - 1;
   const isFirstStep = currentIndex === 0;
 
+  // Get image path for each step - supports step-specific images
+  const getImagePath = (stepId: string) => {
+    const imageMap: Record<string, string> = {
+      'feasibility-study': '/media/image.png',
+      'process-optimization': '/media/image_2.PNG',
+      'commercialization': '/media/image_2.PNG'
+    };
+    return imageMap[stepId] || '/media/image.png';
+  };
+
   if (!step) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -181,13 +191,13 @@ export default function PathToProductionDetail() {
 
       {/* Image Section - Aligned with Content */}
       {(step.id === 'feasibility-study' || step.id === 'process-optimization' || step.id === 'commercialization') && (
-        <div className="relative z-10 w-full px-4 sm:px-6 lg:px-8 mb-8 sm:mb-12 md:mb-16">
-          <div className="max-w-7xl mx-auto">
+        <div className="relative z-10 w-full px-2 sm:px-4 lg:px-6 mb-8 sm:mb-12 md:mb-16">
+          <div className="max-w-[95vw] mx-auto">
             <div className="w-full rounded-xl sm:rounded-2xl overflow-hidden border-2 border-gray-200 shadow-xl bg-gray-50">
               <img 
-                src={step.id === 'feasibility-study' ? "/media/image.png" : "/media/image_2.PNG"} 
+                src={getImagePath(step.id)}
                 alt={step.label} 
-                className="w-full h-full object-contain max-h-[250px] sm:max-h-[300px] md:max-h-[350px] mx-auto block"
+                className="w-full h-full object-contain max-h-[400px] sm:max-h-[500px] md:max-h-[600px] lg:max-h-[700px] mx-auto block"
               />
             </div>
           </div>
