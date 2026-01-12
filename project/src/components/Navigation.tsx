@@ -14,7 +14,7 @@ export default function Navigation() {
 
   const navLinks: Array<{ href: string; label: string; external?: boolean }> = [
     { href: '#pillars', label: 'Platform' },
-    { href: '#ai-architect', label: 'AI Architect' },
+    { href: '#ai-architect', label: 'Flow Suitability Checker' },
     { href: '#calculator', label: 'Savings' },
     { href: '#about', label: 'About' },
     { href: '#blog', label: 'Blog' },
