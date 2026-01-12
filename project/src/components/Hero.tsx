@@ -112,7 +112,7 @@ export default function Hero() {
                 }}
                 className="bg-brand-black text-white px-5 sm:px-6 md:px-8 py-2.5 sm:py-3 md:py-4 rounded-lg sm:rounded-xl md:rounded-2xl text-xs sm:text-sm font-medium hover:bg-gradient-purple transition-all shadow-lg hover:shadow-xl hover:-translate-y-1 w-full sm:w-auto sm:min-w-[180px] md:min-w-[200px] flex items-center justify-center gap-2 group"
               >
-              <span className="text-center">Check Sustainability Score</span>
+              <span className="text-center">Flow Suitability Checker</span>
                 <FlaskConical className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-brand-green group-hover:rotate-12 transition-transform flex-shrink-0" />
               </button>
               <button
