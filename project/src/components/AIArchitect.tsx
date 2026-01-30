@@ -3,6 +3,7 @@ import { Loader2 } from 'lucide-react';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 import { saveAIAnalysis } from '../lib/api';
 import CalBookingModal from './CalBookingModal';
+import { findChemistryScore, getAllChemistryScores, getNearbyScores } from '../lib/chemistryScores';
 
 export default function AIArchitect() {
   const ref = useScrollReveal<HTMLDivElement>();
@@ -20,6 +21,25 @@ export default function AIArchitect() {
     setLoading(true);
     setShowResult(false);
 
+    // Check for predefined chemistry scores first
+    const chemistryMatch = findChemistryScore(input.trim());
+    const predefinedScore = chemistryMatch?.score;
+    const matchedName = chemistryMatch?.matchedName;
+    const confidence = chemistryMatch?.confidence;
+    
+    // Get reference scores for AI context
+    const allScores = getAllChemistryScores();
+    const referenceScores = allScores.map(chem => `${chem.name}: ${chem.score}/10`).join(', ');
+    
+    // If we have a high confidence match, get nearby scores for context
+    let nearbyScoresContext = '';
+    if (predefinedScore !== undefined && (confidence === 'exact' || confidence === 'high')) {
+      const nearby = getNearbyScores(predefinedScore);
+      if (nearby.length > 0) {
+        nearbyScoresContext = ` Similar reactions with nearby scores: ${nearby.map(c => `${c.name} (${c.score}/10)`).join(', ')}.`;
+      }
+    }
+
     // API configuration - using Groq API (gsk_ prefix indicates Groq)
     const apiKey = import.meta.env.VITE_GROQ_API_KEY || "";
     const model = "openai/gpt-oss-120b";
@@ -27,19 +47,24 @@ export default function AIArchitect() {
     const apiEndpoint = "https://api.groq.com/openai/v1/chat/completions";
 
     try {
-      const response = await fetch(
-        apiEndpoint,
-        {
-          method: 'POST',
-          headers: { 
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${apiKey}`
-          },
-          body: JSON.stringify({
-            model: model,
-            messages: [{
-              role: "system",
-              content: `You are a Flow Readiness Assessment AI at Flownetics Engineering (www.flownetics-engg.com), specializing in evaluating chemical processes for flow chemistry suitability and readiness.
+      // Build enhanced system prompt with predefined scores
+      let systemPrompt = `You are a Flow Readiness Assessment AI at Flownetics Engineering (www.flownetics-engg.com), specializing in evaluating chemical processes for flow chemistry suitability and readiness.
+
+VALIDATED CHEMISTRY SCORES (Use these as reference for similar reactions):
+${referenceScores}
+
+IMPORTANT: If the user's input matches or is similar to any of the validated chemistries above, use the corresponding score (or a nearby score for similar reactions). For exact matches, use the exact score. For similar reactions, use a score within ±1.5 of the matched reaction.`;
+      
+      // If we have a predefined score, add specific instructions
+      if (predefinedScore !== undefined) {
+        if (confidence === 'exact' || confidence === 'high') {
+          systemPrompt += `\n\nCRITICAL: The user input "${input.trim()}" matches "${matchedName}" which has a VALIDATED SCORE of ${predefinedScore}/10. You MUST use this exact score: ${predefinedScore}/10.${nearbyScoresContext}`;
+        } else {
+          systemPrompt += `\n\nNOTE: The user input "${input.trim()}" is similar to "${matchedName}" (score: ${predefinedScore}/10). Consider using a score near ${predefinedScore}/10 (within ±1.5) for similar reactions.${nearbyScoresContext}`;
+        }
+      }
+      
+      systemPrompt += `
 
 FLOW CHEMISTRY READINESS RULES & PRECAUTIONS:
 
@@ -85,7 +110,27 @@ FLOW READINESS SCORING CRITERIA (0-10):
 - 3-4: Challenging - Requires significant optimization
 - 0-2: Poor - Not recommended for flow chemistry without major redesign
 
-Always provide specific, actionable flow readiness insights. Reference Flownetics' validated processes when relevant. Format responses as HTML without markdown or html/body tags.`
+SCORING INTELLIGENCE:
+- For reactions matching validated chemistries, use the exact validated score
+- For similar reactions (e.g., "Nitration of benzene" similar to "Nitration"), use scores within ±1.5 of the matched reaction
+- For completely new reactions, evaluate based on the 6 criteria above and reference similar validated reactions
+- Always explain why the score was assigned based on the reaction characteristics
+
+Always provide specific, actionable flow readiness insights. Reference Flownetics' validated processes when relevant. Format responses as HTML without markdown or html/body tags.`;
+      
+      const response = await fetch(
+        apiEndpoint,
+        {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${apiKey}`
+          },
+          body: JSON.stringify({
+            model: model,
+            messages: [{
+              role: "system",
+              content: systemPrompt
             }, {
               role: "user",
               content: `User input: "${input}"
@@ -158,9 +203,26 @@ IMPORTANT: Always provide complete, full answers. Do not truncate or cut off res
 
       // Extract flow readiness score from HTML (format: "Flow Readiness Score: X/10")
       let feasibilityScore: number | null = null;
-      const scoreMatch = cleanHtml.match(/Flow Readiness Score:\s*(\d+)\/10/i);
-      if (scoreMatch) {
-        feasibilityScore = parseInt(scoreMatch[1], 10);
+      
+      // If we have a predefined score with high confidence, use it directly
+      if (predefinedScore !== undefined && (confidence === 'exact' || confidence === 'high')) {
+        feasibilityScore = predefinedScore;
+        // Ensure the HTML contains the correct score
+        const scoreRegex = /Flow Readiness Score:\s*[\d.]+/i;
+        if (!scoreRegex.test(cleanHtml)) {
+          // Replace or add the score if missing
+          const updatedHtml = cleanHtml.replace(
+            /<h3[^>]*>Flow Readiness Score:[\s\S]*?<\/h3>/i,
+            `<h3 style="font-size: 1.75rem; font-weight: 600; color: #057210; margin-bottom: 1.5rem; font-family: 'FF Nort', sans-serif;">Flow Readiness Score: ${predefinedScore}/10</h3>`
+          );
+          setResult(updatedHtml);
+        }
+      } else {
+        // Try to extract from AI response
+        const scoreMatch = cleanHtml.match(/Flow Readiness Score:\s*([\d.]+)\/10/i);
+        if (scoreMatch) {
+          feasibilityScore = parseFloat(scoreMatch[1]);
+        }
       }
 
       // Save analysis to backend (don't wait for it, fire and forget)
