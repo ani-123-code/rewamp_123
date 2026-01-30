@@ -198,7 +198,16 @@ IMPORTANT: Always provide complete, full answers. Do not truncate or cut off res
         .replace(/```/g, '')
         .trim();
 
-      setResult(cleanHtml);
+      // Add disclaimer to the result
+      const disclaimerHtml = `
+        <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid #e5e7eb;">
+          <p style="color: #6b7280; font-size: 0.75rem; line-height: 1.5; text-align: center; font-family: 'FF Nort', sans-serif; font-style: italic;">
+            <strong>Disclaimer:</strong> Scores are strictly indicative for Flownetics and subject to change.
+          </p>
+        </div>
+      `;
+      
+      setResult(cleanHtml + disclaimerHtml);
       setShowResult(true);
 
       // Extract flow readiness score from HTML (format: "Flow Readiness Score: X/10")
