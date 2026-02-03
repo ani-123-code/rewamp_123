@@ -226,17 +226,8 @@ IMPORTANT:
         .replace(/```html/g, '')
         .replace(/```/g, '')
         .trim();
-
-      // Add disclaimer to the result
-      const disclaimerHtml = `
-        <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid #e5e7eb;">
-          <p style="color: #6b7280; font-size: 0.75rem; line-height: 1.5; text-align: center; font-family: 'FF Nort', sans-serif; font-style: italic;">
-            <strong>Disclaimer:</strong> Scores are strictly indicative for Flownetics and subject to change.
-          </p>
-        </div>
-      `;
       
-      setResult(cleanHtml + disclaimerHtml);
+      setResult(cleanHtml);
       setShowResult(true);
 
       // Extract flow readiness score from HTML (format: "Flow Readiness Score: X/10")
@@ -340,6 +331,11 @@ IMPORTANT:
               </button>
             </div>
             <p className="text-xs text-gray-600 mt-3 font-light" style={{ fontFamily: "'FF Nort', sans-serif" }}>Try inputting complex synthesis steps like "Grignard Reaction" or "Hydrogenation".</p>
+            <div className="mt-4 pt-4 border-t border-gray-200">
+              <p className="text-xs text-gray-500 text-center font-light italic" style={{ fontFamily: "'FF Nort', sans-serif" }}>
+                <strong className="font-medium">Disclaimer:</strong> Scores are strictly indicative for Flownetics and subject to change.
+              </p>
+            </div>
           </div>
 
           {showResult && (
