@@ -92,29 +92,30 @@ export const steps = [
 ];
 
 export default function Advantage() {
-  const titleRef = useScrollReveal<HTMLDivElement>();
+  const ref = useScrollReveal<HTMLDivElement>();
 
   return (
-    <section id="advantage" className="py-16 sm:py-20 px-4 sm:px-6 bg-gradient-to-b from-white to-gray-50/30 relative overflow-hidden">
-      <div className="absolute top-0 right-0 w-[300px] sm:w-[500px] h-[300px] sm:h-[500px] bg-gray-200/20 rounded-full mix-blend-multiply filter blur-[120px] opacity-20"></div>
-      <div className="absolute bottom-0 left-0 w-[300px] sm:w-[500px] h-[300px] sm:h-[500px] bg-gray-300/15 rounded-full mix-blend-multiply filter blur-[120px] opacity-20"></div>
+    <section id="advantage" className="py-16 sm:py-20 md:py-24 px-4 sm:px-6 bg-gradient-to-b from-gray-50/30 to-white relative overflow-hidden">
+      {/* Background Elements */}
+      <div className="absolute top-0 right-0 w-[400px] sm:w-[600px] md:w-[800px] h-[400px] sm:h-[600px] md:h-[800px] bg-gray-200/20 rounded-full mix-blend-multiply filter blur-[80px] sm:blur-[100px] md:blur-[120px] animate-blob opacity-20"></div>
+      <div className="absolute bottom-0 left-0 w-[300px] sm:w-[500px] md:w-[600px] h-[300px] sm:h-[500px] md:h-[600px] bg-gray-300/15 rounded-full mix-blend-multiply filter blur-[80px] sm:blur-[100px] md:blur-[120px] animate-blob animation-delay-2000 opacity-20"></div>
 
-      <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-8 sm:gap-12 lg:gap-16 items-start relative z-10">
-        <div className="w-full lg:w-1/3 flex justify-center lg:justify-start">
-          <div ref={titleRef} className="reveal-on-scroll lg:sticky lg:top-24" style={{ marginTop: 'calc(200px + 1.5rem)' }}>
-            <div className="text-center lg:text-left">
-              <div className="mb-4 sm:mb-6">
-                <h2 className="text-3xl sm:text-4xl md:text-5xl font-light tracking-tight text-gray-900" style={{ fontFamily: "'FF Nort', sans-serif" }}>
-                    The Path to<br />Production.
-                  </h2>
-              </div>
-              <p className="text-gray-600 text-base sm:text-lg leading-relaxed font-light" style={{ fontFamily: "'FF Nort', sans-serif" }}>
-                We've removed the barriers. From feasibility to full-scale production in three comprehensive phases.
-              </p>
-            </div>
-          </div>
+      <div ref={ref} className="max-w-7xl mx-auto relative z-10 reveal-on-scroll">
+        {/* Header Section */}
+        <div className="text-center mb-12 sm:mb-16 md:mb-20">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-light tracking-tight text-gray-900 mb-3 sm:mb-4" style={{ fontFamily: "'FF Nort', sans-serif" }}>
+            The Path to Production
+          </h2>
+          <p className="text-gray-700 text-sm sm:text-base md:text-lg leading-relaxed font-light max-w-4xl mx-auto mb-4 sm:mb-5" style={{ fontFamily: "'FF Nort', sans-serif" }}>
+            We've removed the barriers. From feasibility to full-scale production in three comprehensive phases.
+          </p>
+          <p className="text-gray-800 text-xs sm:text-sm font-medium" style={{ fontFamily: "'FF Nort', sans-serif" }}>
+            Our work typically moves through three phases.
+          </p>
         </div>
-        <div className="w-full lg:w-2/3 grid gap-4 sm:gap-6">
+
+        {/* Phase Cards */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
           {steps.map((step, index) => (
             <StepCard key={index} {...step} index={index} />
           ))}
@@ -135,47 +136,55 @@ function StepCard({ number, label, title, description, color, labelColor, delay,
   index: number;
   id: string;
 }) {
-  const ref = useScrollReveal<HTMLDivElement>();
+  const cardRef = useScrollReveal<HTMLDivElement>();
   const navigate = useNavigate();
 
   return (
     <div
-      ref={ref}
-      className="bg-gradient-to-br from-white via-brand-light to-white p-4 sm:p-5 rounded-xl sm:rounded-2xl reveal-on-scroll border-2 transition-all duration-500 hover:shadow-xl hover:-translate-y-1 relative overflow-hidden group flex flex-col"
+      ref={cardRef}
+      className="bg-gradient-to-br from-white via-brand-light to-white rounded-xl sm:rounded-2xl p-4 sm:p-5 border-2 transition-all duration-500 hover:shadow-xl hover:-translate-y-1 group relative overflow-hidden reveal-on-scroll flex flex-col"
       style={{
         transitionDelay: delay,
         borderColor: color,
-        maxHeight: '280px'
+        maxHeight: '400px'
       }}
     >
-      <div className="absolute top-0 right-0 w-20 h-20 rounded-full blur-2xl opacity-20 group-hover:opacity-30 transition-opacity duration-500"
+      {/* Decorative gradient overlay */}
+      <div 
+        className="absolute top-0 right-0 w-20 h-20 rounded-full blur-2xl opacity-20 group-hover:opacity-30 transition-opacity duration-500"
         style={{ backgroundColor: color }}
       ></div>
 
       <div className="relative z-10 flex flex-col flex-1">
+        {/* Phase Number and Title */}
         <div className="mb-2">
-          <span className={`${labelColor} text-xs font-bold uppercase tracking-widest block mb-1`}>
+          <span className={`${labelColor} text-xs font-bold uppercase tracking-widest block mb-1`} style={{ fontFamily: "'FF Nort', sans-serif" }}>
             {number}
           </span>
-          <span className={`${labelColor} text-xs font-semibold uppercase tracking-wide`}>
-            {label}
-          </span>
+          <h3 className="text-base sm:text-lg font-medium text-gray-900 mb-1.5 group-hover:scale-[1.02] transition-transform duration-300 overflow-hidden" style={{ fontFamily: "'FF Nort', sans-serif", maxHeight: '3.5rem' }}>
+            {title}
+          </h3>
         </div>
 
-        <h3 className="text-base sm:text-lg font-medium mb-1.5 text-gray-900 group-hover:scale-[1.02] transition-transform duration-300 overflow-hidden" style={{ fontFamily: "'FF Nort', sans-serif", maxHeight: '3.5rem' }}>
-          {title}
-        </h3>
-        <p className="text-gray-600 text-xs leading-relaxed mb-3 font-light flex-1 overflow-hidden" style={{ fontFamily: "'FF Nort', sans-serif", maxHeight: '2.5rem' }}>{description}</p>
+        {/* Description */}
+        <p className="text-gray-600 text-xs leading-relaxed font-light mb-3 flex-1 overflow-hidden" style={{ fontFamily: "'FF Nort', sans-serif", maxHeight: '4rem' }}>
+          {description}
+        </p>
 
-        <button
-          onClick={() => navigate(`/path-to-production/${id}`)}
-          className={`inline-flex items-center gap-2 ${labelColor} font-semibold text-xs hover:gap-3 transition-all group/btn mt-auto`}
-        >
-          View More
-          <ArrowRight className="w-3 h-3 group-hover/btn:translate-x-1 transition-transform" />
-        </button>
+        {/* Call to Action */}
+        <div className="pt-2 border-t border-gray-200 mt-auto">
+          <button
+            onClick={() => navigate(`/path-to-production/${id}`)}
+            className={`inline-flex items-center gap-2 ${labelColor} font-semibold text-xs hover:gap-3 transition-all group/btn w-full justify-start`}
+            style={{ fontFamily: "'FF Nort', sans-serif" }}
+          >
+            View More
+            <ArrowRight className="w-3 h-3 group-hover/btn:translate-x-1 transition-transform" />
+          </button>
+        </div>
       </div>
 
+      {/* Bottom accent line */}
       <div
         className="absolute bottom-0 left-0 w-full h-1.5 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left rounded-b-2xl"
         style={{ backgroundColor: color }}
