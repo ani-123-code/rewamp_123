@@ -433,7 +433,7 @@ export default function Pillars() {
                         <div className="flex items-center gap-2 mb-1">
                           <div className="w-1.5 h-1.5 rounded-full bg-brand-green"></div>
                           <span className="text-xs text-gray-300 font-light" style={{ fontFamily: "'FF Nort', sans-serif" }}>
-                            100+ molecules
+                            ISO & GMP Ready
                           </span>
                         </div>
                       </div>
