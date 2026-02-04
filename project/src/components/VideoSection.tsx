@@ -1,103 +1,8 @@
-import { useRef, useEffect, useState } from 'react';
-import { Volume2, VolumeX, Play, Pause, RotateCcw, Maximize } from 'lucide-react';
+import { useRef } from 'react';
 
 export default function VideoSection() {
-  const videoRef = useRef<HTMLVideoElement>(null);
   const sectionRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const [isMuted, setIsMuted] = useState(true);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [isFullscreen, setIsFullscreen] = useState(false);
-
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    const handlePlay = () => setIsPlaying(true);
-    const handlePause = () => setIsPlaying(false);
-
-    video.addEventListener('play', handlePlay);
-    video.addEventListener('pause', handlePause);
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting && video) {
-            video.play().catch(err => console.log('Video play failed:', err));
-          } else if (video) {
-            video.pause();
-          }
-        });
-      },
-      { threshold: 0.5 }
-    );
-
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current);
-    }
-
-    return () => {
-      video.removeEventListener('play', handlePlay);
-      video.removeEventListener('pause', handlePause);
-      if (sectionRef.current) {
-        observer.unobserve(sectionRef.current);
-      }
-    };
-  }, []);
-
-  const toggleMute = () => {
-    if (videoRef.current) {
-      videoRef.current.muted = !videoRef.current.muted;
-      setIsMuted(!isMuted);
-    }
-  };
-
-  const togglePlay = () => {
-    if (videoRef.current) {
-      if (isPlaying) {
-        videoRef.current.pause();
-        setIsPlaying(false);
-      } else {
-        videoRef.current.play();
-        setIsPlaying(true);
-      }
-    }
-  };
-
-  const restart = () => {
-    if (videoRef.current) {
-      videoRef.current.currentTime = 0;
-      videoRef.current.play();
-      setIsPlaying(true);
-    }
-  };
-
-  const toggleFullscreen = () => {
-    if (!containerRef.current) return;
-
-    if (!document.fullscreenElement) {
-      containerRef.current.requestFullscreen().then(() => {
-        setIsFullscreen(true);
-      }).catch(err => {
-        console.log('Fullscreen failed:', err);
-      });
-    } else {
-      document.exitFullscreen().then(() => {
-        setIsFullscreen(false);
-      });
-    }
-  };
-
-  useEffect(() => {
-    const handleFullscreenChange = () => {
-      setIsFullscreen(!!document.fullscreenElement);
-    };
-
-    document.addEventListener('fullscreenchange', handleFullscreenChange);
-    return () => {
-      document.removeEventListener('fullscreenchange', handleFullscreenChange);
-    };
-  }, []);
 
   return (
     <>
@@ -107,55 +12,14 @@ export default function VideoSection() {
         
         <div className="w-full max-w-[95%] mx-auto px-2 sm:px-4 lg:px-6 relative z-10">
           <div ref={containerRef} className="aspect-[21/9] w-full max-h-[85vh] bg-black overflow-hidden rounded-2xl sm:rounded-3xl shadow-2xl relative group transition-all border-4 border-gray-100">
-            <video
-              ref={videoRef}
+            <img
+              src="/media/video.png"
+              alt="Flownetics video placeholder"
               className="w-full h-full object-cover"
-              autoPlay
-              loop
-              muted={isMuted}
-              playsInline
-              preload="metadata"
-            >
-              <source src="/media/Flownetics_new _edit.mp4" type="video/mp4" />
-              Your browser does not support the video tag.
-            </video>
+            />
 
-            {/* Gradient overlay for better button visibility */}
+            {/* Gradient overlay for better visibility */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent pointer-events-none"></div>
-
-            <div className="absolute bottom-4 sm:bottom-6 right-4 sm:right-6 flex gap-2 sm:gap-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-              <button
-                onClick={restart}
-                className="bg-black/80 hover:bg-black text-white p-2.5 sm:p-3 rounded-xl backdrop-blur-md transition-all hover:scale-110 shadow-lg border border-white/10"
-                aria-label="Restart video"
-              >
-                <RotateCcw className="w-4 h-4 sm:w-5 sm:h-5" />
-              </button>
-
-              <button
-                onClick={togglePlay}
-                className="bg-black/80 hover:bg-black text-white p-2.5 sm:p-3 rounded-xl backdrop-blur-md transition-all hover:scale-110 shadow-lg border border-white/10"
-                aria-label={isPlaying ? 'Pause' : 'Play'}
-              >
-                {isPlaying ? <Pause className="w-4 h-4 sm:w-5 sm:h-5" /> : <Play className="w-4 h-4 sm:w-5 sm:h-5" />}
-              </button>
-
-              <button
-                onClick={toggleMute}
-                className="bg-black/80 hover:bg-black text-white p-2.5 sm:p-3 rounded-xl backdrop-blur-md transition-all hover:scale-110 shadow-lg border border-white/10"
-                aria-label={isMuted ? 'Unmute' : 'Mute'}
-              >
-                {isMuted ? <VolumeX className="w-4 h-4 sm:w-5 sm:h-5" /> : <Volume2 className="w-4 h-4 sm:w-5 sm:h-5" />}
-              </button>
-
-              <button
-                onClick={toggleFullscreen}
-                className="bg-black/80 hover:bg-black text-white p-2.5 sm:p-3 rounded-xl backdrop-blur-md transition-all hover:scale-110 shadow-lg border border-white/10"
-                aria-label="Toggle fullscreen"
-              >
-                <Maximize className="w-4 h-4 sm:w-5 sm:h-5" />
-              </button>
-            </div>
           </div>
         </div>
       </section>
