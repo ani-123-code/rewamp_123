@@ -11,11 +11,11 @@ export default function VideoSection() {
         <div className="absolute bottom-0 right-0 w-[400px] sm:w-[600px] h-[400px] sm:h-[600px] bg-gray-300/15 rounded-full mix-blend-multiply filter blur-[120px] opacity-20"></div>
         
         <div className="w-full max-w-[95%] mx-auto px-2 sm:px-4 lg:px-6 relative z-10">
-          <div ref={containerRef} className="aspect-[21/9] w-full max-h-[85vh] bg-black overflow-hidden rounded-2xl sm:rounded-3xl shadow-2xl relative group transition-all border-4 border-gray-100">
+          <div ref={containerRef} className="w-full bg-black overflow-hidden rounded-2xl sm:rounded-3xl shadow-2xl relative group transition-all border-4 border-gray-100 flex items-center justify-center">
             <img
               src="/media/Placeholder for video.png"
               alt="Flownetics video placeholder"
-              className="w-full h-full object-cover"
+              className="w-full h-auto object-contain"
             />
 
             {/* Gradient overlay for better visibility */}
